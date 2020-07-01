@@ -98,9 +98,9 @@ public class BentoBox extends JavaPlugin {
         if (!ServerCompatibility.getInstance().checkCompatibility().isCanLaunch()) {
             // The server's most likely incompatible.
             // Show a warning
-            logWarning("************ Disclaimer **************");
-            logWarning("BentoBox may not be compatible with this server!");
-            logWarning("BentoBox is tested only on the following Spigot versions:");
+            logWarning("************ 免责声明 **************");
+            logWarning("BentoBox 可能与此服务器不兼容!");
+            logWarning("BentoBox 仅在以下 Spigot 版本中测试过:");
 
             List<String> versions = ServerCompatibility.ServerVersion.getVersions(ServerCompatibility.Compatibility.COMPATIBLE, ServerCompatibility.Compatibility.SUPPORTED)
                     .stream().map(ServerCompatibility.ServerVersion::toString).collect(Collectors.toList());
@@ -230,10 +230,10 @@ public class BentoBox extends JavaPlugin {
             }, 0L, 1L);
 
             if (getSettings().getDatabaseType().equals(DatabaseSetup.DatabaseType.YAML)) {
-                logWarning("*** You're still using YAML database ! ***");
-                logWarning("This database type is being deprecated from BentoBox as some official addons encountered difficulties supporting it correctly.");
-                logWarning("You should switch ASAP to an alternative database type. Please refer to the comments in BentoBox's config.yml.");
-                logWarning("There is NO guarantee YAML database will remain properly supported in the following updates, and its usage should as such be considered a non-viable situation.");
+                logWarning("*** 你还在使用 YAML 数据库 ! ***");
+                logWarning("此数据库类型已不再受官方支持.");
+                logWarning("你应该尽快转换到其它数据库类型. 转换方法见 https://www.mcbbs.net/thread-1009602-1-1.html.");
+                logWarning("我们不保证在以后的更新中还会保留此数据类型, 并且将变成一种不可用的数据库类型.");
                 logWarning("*** *** *** *** *** *** *** *** *** *** ***");
             }
         });
@@ -359,13 +359,13 @@ public class BentoBox extends JavaPlugin {
      * @since 1.3.0
      */
     public boolean loadSettings() {
-        log("Loading Settings from config.yml...");
+        log("读取配置中...");
         // Load settings from config.yml. This will check if there are any issues with it too.
         if (configObject == null) configObject = new Config<>(this, Settings.class);
         settings = configObject.loadConfigObject();
         if (settings == null) {
             // Settings did not load correctly. Disable plugin.
-            logError("Settings did not load correctly - disabling plugin - please check config.yml");
+            logError("配置文件错误 - 正在禁用插件 - 请检查 config.yml");
             getPluginLoader().disablePlugin(this);
             return false;
         }
@@ -396,7 +396,7 @@ public class BentoBox extends JavaPlugin {
     }
 
     public void logDebug(Object object) {
-        getLogger().info(() -> "DEBUG: " + object);
+        getLogger().info(() -> "调试: " + object);
     }
 
     public void logError(String error) {

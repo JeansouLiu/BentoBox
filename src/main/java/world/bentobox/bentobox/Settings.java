@@ -14,67 +14,68 @@ import world.bentobox.bentobox.database.DatabaseSetup.DatabaseType;
  * @author tastybento
  */
 @StoreAt(filename="config.yml") // Explicitly call out what name this should have.
-@ConfigComment("BentoBox v[version] configuration file.")
+@ConfigComment("BentoBox v[version] 配置文件.")
 @ConfigComment("")
-@ConfigComment("This configuration file contains settings that mainly apply to or manage the following elements:")
-@ConfigComment(" * Data storage")
-@ConfigComment(" * Gamemodes (commands, ...)")
-@ConfigComment(" * Internet connectivity (web-based content-enriched features, ...)")
+@ConfigComment("你可以在这里设置以下项:")
+@ConfigComment(" * 数据存储方式")
+@ConfigComment(" * 游戏模式 (指令, ...)")
+@ConfigComment(" * 网络连接 (web-based content-enriched 功能, ...)")
 @ConfigComment("")
-@ConfigComment("Note that this configuration file is dynamic:")
-@ConfigComment(" * It gets updated with the newest settings and comments after BentoBox loaded its settings from it.")
-@ConfigComment(" * Upon updating BentoBox, new settings will be automatically added into this configuration file.")
-@ConfigComment("    * Said settings are distinguishable by a dedicated comment, which looks like this:")
+@ConfigComment("注意这个配置文件是会实时变化的:")
+@ConfigComment(" * BentoBox 读取完此文件后会用最新的设置和注释更新此文件.")
+@ConfigComment(" * 当更新 BentoBox 时, 新设置会自动加到此文件中.")
+@ConfigComment("    * 并会加入像这样的注释:")
 @ConfigComment("       Added since X.Y.Z.")
-@ConfigComment("    * They are provided with default values that should not cause issues on live production servers.")
-@ConfigComment(" * You can however edit this file while the server is online.")
-@ConfigComment("   You will therefore need to run the following command in order to take the changes into account: /bentobox reload.")
+@ConfigComment("    * 新设置都是默认值, 一般不会对你的服务器造成影响.")
+@ConfigComment(" * 你可以在服务器运行时编辑此文件.")
+@ConfigComment("   但是你需要执行此命令使其生效: /bentobox reload.")
 @ConfigComment("")
-@ConfigComment("Here are a few pieces of advice before you get started:")
-@ConfigComment(" * You should check out our Wiki, which may provide you useful tips or insights about BentoBox's features.")
-@ConfigComment("    Link: https://github.com/BentoBoxWorld/BentoBox/wiki")
-@ConfigComment(" * You should edit this configuration file while the server is offline.")
-@ConfigComment(" * Moreover, whenever you update BentoBox, you should do so on a test server first.")
+@ConfigComment("这是一些开始之前的建议:")
+@ConfigComment(" * 阅读插件文档, 里面有有用的提示和见解.")
+@ConfigComment("    英文文档链接: https://github.com/BentoBoxWorld/BentoBox/wiki")
+@ConfigComment("    中文文档链接: https://www.mcbbs.net/thread-1009602-1-1.html")
+@ConfigComment(" * 建议在关闭服务器的状态下编辑此文件.")
+@ConfigComment(" * 另外, 在更新 BentoBox 后, 建议先在测试服务器中进行测试.")
 @ConfigComment("    This will allow you to configure the new settings beforehand instead of applying them inadvertently on a live production server.")
 public class Settings implements ConfigObject {
 
     /*      GENERAL     */
-    @ConfigComment("Default language for new players.")
-    @ConfigComment("This is the filename in the locale folder without .yml.")
-    @ConfigComment("If this does not exist, the default en-US will be used.")
+    @ConfigComment("新玩家的默认语言.")
+    @ConfigComment("请填写 locales 文件夹中不带 .yml 后缀的文件名.")
+    @ConfigComment("如果你填写的文件不存在, 将会使用默认的美式英语.")
     @ConfigEntry(path = "general.default-language")
-    private String defaultLanguage = "en-US";
+    private String defaultLanguage = "zh-CN";
 
-    @ConfigComment("Use economy or not. If true, an economy plugin is required. If false, no money is used or given.")
-    @ConfigComment("If there is no economy plugin present anyway, money will be automatically disabled.")
+    @ConfigComment("是否开启经济功能. 如果开启, 你必须安装一个经济插件. 如果关闭, 插件的任何功能都不会收取或奖励金钱.")
+    @ConfigComment("如果服务器未安装经济插件, 此项将会自动禁用.")
     @ConfigEntry(path = "general.use-economy")
     private boolean useEconomy = true;
 
     // Database
-    @ConfigComment("JSON, MYSQL, MARIADB, MONGODB, SQLITE, POSTGRESQL and YAML(deprecated).")
-    @ConfigComment("Transition database options are:")
+    @ConfigComment("JSON, MYSQL, MARIADB, MONGODB, SQLITE, POSTGRESQL 和 YAML(不推荐).")
+    @ConfigComment("数据库转换选项:")
     @ConfigComment("  YAML2JSON, YAML2MARIADB, YAML2MYSQL, YAML2MONGODB, YAML2SQLITE")
     @ConfigComment("  JSON2MARIADB, JSON2MYSQL, JSON2MONGODB, JSON2SQLITE, JSON2POSTGRESQL")
     @ConfigComment("  MYSQL2JSON, MARIADB2JSON, MONGODB2JSON, SQLITE2JSON, POSTGRESQL2JSON")
-    @ConfigComment("If you need others, please make a feature request.")
-    @ConfigComment("Minimum required versions:")
-    @ConfigComment("   MySQL versions 5.7 or later")
-    @ConfigComment("   MariaDB versions 10.2.3 or later")
-    @ConfigComment("   MongoDB versions 3.6 or later")
-    @ConfigComment("   SQLite versions 3.28 or later")
-    @ConfigComment("   PostgreSQL versions 9.4 or later")
-    @ConfigComment("Transition options enable migration from one database type to another. Use /bbox migrate.")
-    @ConfigComment("YAML and JSON are file-based databases.")
-    @ConfigComment("MYSQL might not work with all implementations: if available, use a dedicated database type (e.g. MARIADB).")
-    @ConfigComment("If you use MONGODB, you must also run the BSBMongo plugin (not addon).")
-    @ConfigComment("See https://github.com/tastybento/bsbMongo/releases/.")
-    @ConfigEntry(path = "general.database.type", video = "https://youtu.be/FFzCk5-y7-g")
+    @ConfigComment("如果你想使用其它存储方式, 请在 GitHub 上建议")
+    @ConfigComment("最低要求:")
+    @ConfigComment("   MySQL 5.7 或更高")
+    @ConfigComment("   MariaDB 10.2.3 或更高")
+    @ConfigComment("   MongoDB 3.6 或更高")
+    @ConfigComment("   SQLite 3.28 或更高")
+    @ConfigComment("   PostgreSQL 9.4 或更高")
+    @ConfigComment("数据库转换选项用于转换数据库类型时迁移数据. 使用指令 /bbox migrate.")
+    @ConfigComment("YAML 和 JSON 是基于文件的存储类型.")
+    @ConfigComment("MYSQL 可能会在某些平台上出现问题: 如果是这样的话, 请使用专用数据库类型 (如 MARIADB).")
+    @ConfigComment("如果你在使用 MONGODB, 你必须安装 BSBMongo 插件 (非扩展).")
+    @ConfigComment("见 https://github.com/tastybento/bsbMongo/releases/.")
+    @ConfigEntry(path = "general.database.type", video = "https://www.bilibili.com/video/BV1ap4y1C7bo/")
     private DatabaseType databaseType = DatabaseType.JSON;
 
     @ConfigEntry(path = "general.database.host")
     private String databaseHost = "localhost";
 
-    @ConfigComment("Port 3306 is MySQL's default. Port 27017 is MongoDB's default.")
+    @ConfigComment("3306 是 MySQL 的默认端口. 27017 是 MongoDB 的默认端口.")
     @ConfigEntry(path = "general.database.port")
     private int databasePort = 3306;
 
@@ -87,41 +88,42 @@ public class Settings implements ConfigObject {
     @ConfigEntry(path = "general.database.password")
     private String databasePassword = "password";
 
-    @ConfigComment("How often the data will be saved to file in mins. Default is 5 minutes.")
-    @ConfigComment("This helps prevent issues if the server crashes.")
-    @ConfigComment("Data is also saved at important points in the game.")
+    @ConfigComment("多久保存一次数据到文件中. 默认是 5 分钟.")
+    @ConfigComment("这可以相对减少服务器崩溃造成的数据丢失.")
+    @ConfigComment("数据还会在某些重要操作执行时保存.")
     @ConfigEntry(path = "general.database.backup-period")
     private int databaseBackupPeriod = 5;
 
-    @ConfigComment("Enable SSL connection to MongoDB, MariaDB, MySQL and PostgreSQL databases.")
+    @ConfigComment("开启对 MongoDB, MariaDB, MySQL 和 PostgreSQL 的加密连接支持.")
     @ConfigEntry(path = "general.database.use-ssl", since = "1.12.0")
     private boolean useSSL = false;
 
-    @ConfigComment("Database table prefix character. Adds a prefix to the database tables. Not used by flatfile databases.")
-    @ConfigComment("Only the characters A-Z, a-z, 0-9 can be used. Invalid characters will become an underscore.")
-    @ConfigComment("Set this to a unique value if you are running multiple BentoBox instances that share a database.")
+    @ConfigComment("数据表前缀. 若使用文件存储方式请无视此项.")
+    @ConfigComment("仅允许 A-Z, a-z, 0-9. 其它字符将被替换为下划线(_).")
+    @ConfigComment("如果你的多个 BentoBox 服务器使用同一个数据库，请务必设置此项.")
     @ConfigEntry(path = "general.database.prefix-character", since = "1.13.0")
     private String databasePrefix = "";
 
-    @ConfigComment("Allow FTB Autonomous Activator to work (will allow a pseudo player [CoFH] to place and break blocks and hang items)")
-    @ConfigComment("Add other fake player names here if required")
+    @ConfigComment("允许 FTB(https://www.feed-the-beast.com/ 一个 MOD) 模组的自激活仪器(Autonomous Activator)工作 (将会允许虚拟玩家 [CoFH] 放置和破坏方块并拾取物品)")
+    @ConfigComment("如果需要的话，在这里添加更多虚拟玩家的名字")
     @ConfigEntry(path = "general.fakeplayers", experimental = true)
     private Set<String> fakePlayers = new HashSet<>();
 
+    @ConfigComment("当玩家点击菜单之外的区域时关闭菜单")
     @ConfigEntry(path = "panel.close-on-click-outside")
     private boolean closePanelOnClickOutside = true;
 
     /*
      * Logs
      */
-    @ConfigComment("Toggle whether superflat chunks regeneration should be logged in the server logs or not.")
-    @ConfigComment("It can be spammy if there are a lot of superflat chunks to regenerate.")
-    @ConfigComment("However, as superflat chunks regeneration can be performance-intensive, it is recommended to keep")
-    @ConfigComment("this setting set to true, as it will help you know if there are regenerations taking place.")
+    @ConfigComment("是否在服务器日志中记录超平坦区块的重新生成.")
+    @ConfigComment("如果超平坦区块很多的话，它会霸占你的控制台.")
+    @ConfigComment("但是, 超平坦区块的重新生成非常占用服务器性能, 所以推荐将")
+    @ConfigComment("此功能打开, 这样会方便你查找服务器卡顿问题的原因.")
     @ConfigEntry(path = "logs.clean-super-flat-chunks", since = "1.2.0")
     private boolean logCleanSuperFlatChunks = true;
 
-    @ConfigComment("Toggle whether downloading data from GitHub should be logged in the server logs or not.")
+    @ConfigComment("从 GitHub 下载数据的行为是否要记录在日志中.")
     @ConfigEntry(path = "logs.github-download-data", since = "1.5.0")
     private boolean logGithubDownloadData = true;
 
@@ -129,43 +131,42 @@ public class Settings implements ConfigObject {
      * Island
      */
     // Cooldowns
-    @ConfigComment("How long a player must wait until they can rejoin a team island after being kicked in minutes.")
-    @ConfigComment("This slows the effectiveness of players repeating challenges")
-    @ConfigComment("by repetitively being invited to a team island.")
+    @ConfigComment("玩家被踢出一个队伍多少分钟后可以再次加入一个队伍.")
+    @ConfigComment("这可以降低玩家重复进入队伍重复做任务的效率")
     @ConfigEntry(path = "island.cooldown.time.invite")
     private int inviteCooldown = 60;
 
-    @ConfigComment("How long a player must wait until they can coop a player in minutes.")
+    @ConfigComment("玩家需要等多久才能再次与一个玩家合作.")
     @ConfigEntry(path = "island.cooldown.time.coop")
     private int coopCooldown = 5;
 
-    @ConfigComment("How long a player must wait until they can trust a player in minutes.")
+    @ConfigComment("玩家需要等几分钟才能再次信任一个玩家.")
     @ConfigEntry(path = "island.cooldown.time.trust")
     private int trustCooldown = 5;
 
-    @ConfigComment("How long a player must wait until they can ban a player after unbanning them. In minutes.")
+    @ConfigComment("玩家在解封一个玩家多久后可以再封禁他. 以分钟为单位.")
     @ConfigEntry(path = "island.cooldown.time.ban")
     private int banCooldown = 10;
 
-    @ConfigComment("How long a player must wait before they can reset their island again in seconds.")
+    @ConfigComment("玩家两次重置岛屿需最少间隔多少秒.")
     @ConfigEntry(path = "island.cooldown.time.reset")
     private int resetCooldown = 300;
 
-    @ConfigComment("Whether the reset cooldown should be applied when the player creates an island for the first time or not.")
+    @ConfigComment("岛屿重置限制是否应在玩家第一次创建岛屿时就开始执行.")
     @ConfigEntry(path = "island.cooldown.options.set-reset-cooldown-on-create", since = "1.2.0")
     private boolean resetCooldownOnCreate = true;
 
     // Timeout for team kick and leave commands
-    @ConfigComment("Time in seconds that players have to confirm sensitive commands, e.g. island reset.")
+    @ConfigComment("玩家需要在多少秒内确认某些重要操作, 如岛屿重置.")
     @ConfigEntry(path = "island.confirmation.time")
     private int confirmationTime = 10;
 
     // Timeout for team kick and leave commands
-    @ConfigComment("Time in seconds that players have to stand still before teleport commands activate, e.g. island go.")
+    @ConfigComment("玩家需要站着不动多少秒后才能触发传送操作, 如 /island go.")
     @ConfigEntry(path = "island.delay.time")
     private int delayTime = 0;
 
-    @ConfigComment("Ask the player to confirm the command he is using by typing it again.")
+    @ConfigComment("哪些操作需要再次输入指令确认.")
     @ConfigEntry(path = "island.confirmation.commands.kick")
     private boolean kickConfirmation = true;
 
@@ -175,87 +176,85 @@ public class Settings implements ConfigObject {
     @ConfigEntry(path = "island.confirmation.commands.reset")
     private boolean resetConfirmation = true;
 
-    @ConfigComment("Ask the recipient to confirm trust or coop invites.")
-    @ConfigComment("Team invites will always require confirmation, for safety concerns.")
+    @ConfigComment("玩家是否需要确认信任/合作请求.")
+    @ConfigComment("由于安全原因, 团队邀请始终需要确认.")
     @ConfigEntry(path = "island.confirmation.invites", since = "1.8.0")
     private boolean inviteConfirmation = false;
 
-    @ConfigComment("Sets the minimum length an island custom name is required to have.")
+    @ConfigComment("岛屿名最短需要多少个字符.")
     @ConfigEntry(path = "island.name.min-length")
     private int nameMinLength = 4;
-    @ConfigComment("Sets the maximum length an island custom name cannot exceed.")
+    @ConfigComment("岛屿名最多可以包含的字符数.")
     @ConfigEntry(path = "island.name.max-length")
     private int nameMaxLength = 20;
-    @ConfigComment("Requires island custom names to be unique in the gamemode the island is in.")
-    @ConfigComment("As a result, only one island per gamemode are allowed to share the same name.")
-    @ConfigComment("Note that island names are purely cosmetics and are not used as a way to programmatically identify islands.")
+    @ConfigComment("是否禁止岛屿重名.")
+    @ConfigComment("如果开启，每个游戏模式的每一个岛屿的名字都必须是不同的.")
+    @ConfigComment("注意岛屿名并不会被插件用来识别岛屿.")
     @ConfigEntry(path = "island.name.uniqueness", since = "1.7.0")
     private boolean nameUniqueness = false;
 
-    @ConfigComment("Remove hostile mob on teleport box radius")
-    @ConfigComment("If hostile mobs are cleared on player teleport, then this sized box will be cleared")
-    @ConfigComment("around the player. e.g. 5 means a 10 x 10 x 10 box around the player")
-    @ConfigComment("Be careful not to make this too big. Does not cover standard nether or end teleports.")
+    @ConfigComment("移除在传送目的地多少范围内的敌对生物")
+    @ConfigComment("如果敌对生物已清除，玩家周围的火柴盒就会被移除")
+    @ConfigComment("如设为 5 将会在玩家周围搭起 10 x 10 x 10 的火柴盒")
+    @ConfigComment("尽量不要设太大. 此项不影响末地和下界的传送.")
     @ConfigEntry(path = "island.clear-radius", since = "1.6.0")
     private int clearRadius = 5;
 
-    @ConfigComment("Number of blocks to paste per tick when pasting blueprints.")
-    @ConfigComment("Smaller values will help reduce noticeable lag but will make pasting take slightly longer.")
-    @ConfigComment("On the contrary, greater values will make pasting take less time, but this benefit is quickly severely impacted by the")
-    @ConfigComment("resulting amount of chunks that must be loaded to fulfill the process, which often causes the server to hang out.")
+    @ConfigComment("粘贴蓝图的速度(多少方块/tick).")
+    @ConfigComment("值越小，对服务器的影响越小，但是粘贴时间会加长.")
+    @ConfigComment("过大的值可能导致服务器崩溃")
     @ConfigEntry(path = "island.paste-speed")
     private int pasteSpeed = 64;
 
-    @ConfigComment("Island deletion: Number of chunks per world to regenerate per second.")
-    @ConfigComment("If there is a nether and end then 3x this number will be regenerated per second.")
-    @ConfigComment("Smaller values will help reduce noticeable lag but will make deleting take longer.")
-    @ConfigComment("A setting of 0 will leave island blocks (not recommended).")
+    @ConfigComment("删除岛屿的速度(多少区块/tick/世界).")
+    @ConfigComment("末地和下界的速度是这个的 3 倍")
+    @ConfigComment("值越小，对服务器的影响越小，但是粘贴时间会加长.")
+    @ConfigComment("设为 0 将保留岛屿方块 (不推荐).")
     @ConfigEntry(path = "island.delete-speed", since = "1.7.0")
     private int deleteSpeed = 1;
 
     // Automated ownership transfer
-    @ConfigComment("Toggles the automated ownership transfer.")
-    @ConfigComment("It automatically transfers the ownership of an island to one of its members in case the current owner is inactive.")
-    @ConfigComment("More precisely, it transfers the ownership of the island to the player who's active, whose rank is the highest")
-    @ConfigComment("and who's been part of the island the longest time.")
-    @ConfigComment("Setting this to 'false' will disable the feature.")
+    @ConfigComment("是否自动切换岛主.")
+    @ConfigComment("若原岛主长时间处于不活跃状态，将自动授予一个成员岛主身份")
+    @ConfigComment("该成员为该岛上等级最高且最活跃的玩家")
+    @ConfigComment("并且在该岛的时间最长")
+    @ConfigComment("设为 'false' 将禁用此功能.")
     @ConfigEntry(path = "island.automated-ownership-transfer.enable", hidden = true)
     private boolean enableAutoOwnershipTransfer = false;
 
-    @ConfigComment("Time in days since the island owner's last disconnection before they are considered inactive.")
+    @ConfigComment("岛主连续不上线多少天后将被视为不活跃")
     @ConfigEntry(path = "island.automated-ownership-transfer.inactivity-threshold", hidden = true)
     private int autoOwnershipTransferInactivityThreshold = 30;
 
-    @ConfigComment("Ranks are being considered when transferring the island ownership to one of its member.")
-    @ConfigComment("Ignoring ranks will result in the island ownership being transferred to the player who's active and")
-    @ConfigComment("who's been member of the island the longest time.")
+    @ConfigComment("修改岛主时是否考虑成员等级")
+    @ConfigComment("如果忽略，插件将仅考虑玩家的活跃度")
+    @ConfigComment("和成为该岛成员的时长")
     @ConfigEntry(path = "island.automated-ownership-transfer.ignore-ranks", hidden = true)
     private boolean autoOwnershipTransferIgnoreRanks = false;
 
     // Island deletion related settings
-	@ConfigComment("Toggles whether islands, when players are resetting them, should be kept in the world or deleted.")
-	@ConfigComment("* If set to 'true', whenever a player resets his island, his previous island will become unowned and won't be deleted from the world.")
-	@ConfigComment("  You can, however, still delete those unowned islands through purging.")
-	@ConfigComment("  On bigger servers, this can lead to an increasing world size.")
-	@ConfigComment("  Yet, this allows admins to retrieve a player's old island in case of an improper use of the reset command.")
-	@ConfigComment("  Admins can indeed re-add the player to his old island by registering him to it.")
-	@ConfigComment("* If set to 'false', whenever a player resets his island, his previous island will be deleted from the world.")
-	@ConfigComment("  This is the default behaviour.")
+	@ConfigComment("玩家重置岛屿时是否清除旧岛.")
+	@ConfigComment("* 如果设为 'true', 当玩家重置岛屿时, 旧岛将会保留且变为未领取状态.")
+	@ConfigComment("  但是你仍然可以以后清除它们.")
+	@ConfigComment("  如果你的服务器规模较大, 这会导致世界体积变大.")
+	@ConfigComment("  然而这将允许管理员恢复一个玩家的岛屿.")
+	@ConfigComment("  管理员也可以为旧岛设置所有者.")
+	@ConfigComment("* 如果设为 'false', 当玩家重置岛屿时, 旧岛就会被删除.")
+	@ConfigComment("  这是默认的值.")
 	@ConfigEntry(path = "island.deletion.keep-previous-island-on-reset", since = "1.13.0")
 	private boolean keepPreviousIslandOnReset = false;
 
     /* WEB */
-    @ConfigComment("Toggle whether BentoBox can connect to GitHub to get data about updates and addons.")
-    @ConfigComment("Disabling this will result in the deactivation of the update checker and of some other")
-    @ConfigComment("features that rely on the data downloaded from the GitHub API.")
-    @ConfigComment("It does not send any data.")
+    @ConfigComment("是否允许 BentoBox 连接 GitHub 获取更新和扩展.")
+    @ConfigComment("禁用此功能将导致更新检测不可用并将禁用依赖 GitHub 数据的功能.")
+    @ConfigComment("插件不会发送任何信息.")
     @ConfigEntry(path = "web.github.download-data", since = "1.5.0")
     private boolean githubDownloadData = true;
 
-    @ConfigComment("Time in minutes between each connection to the GitHub API.")
-    @ConfigComment("This allows for up-to-the-minute information gathering.")
-    @ConfigComment("However, as the GitHub API data does not get updated instantly, this value cannot be set to less than 60 minutes.")
-    @ConfigComment("Setting this to 0 will make BentoBox download data only at startup.")
+    @ConfigComment("连接到 GitHub 服务器的间隔, 以分钟为单位.")
+    @ConfigComment("这样有助于收集最新信息.")
+    @ConfigComment("但是由于 GitHub API 不会实时更新数据, 所以此值不得少于 60 分钟.")
+    @ConfigComment("设为 0 禁用(仅在启动时连接).")
     @ConfigEntry(path = "web.github.connection-interval", since = "1.5.0")
     private int githubConnectionInterval = 120;
 
