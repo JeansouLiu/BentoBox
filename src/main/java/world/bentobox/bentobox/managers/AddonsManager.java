@@ -77,14 +77,14 @@ public class AddonsManager {
      * Loads all the addons from the addons folder
      */
     public void loadAddons() {
-        plugin.log("Loading addons...");
+        plugin.log("加载扩展中...");
         File f = new File(plugin.getDataFolder(), "addons");
         if (!f.exists() && !f.mkdirs()) {
-            plugin.logError("Cannot create addons folder!");
+            plugin.logError("无法创建扩展文件夹!");
             return;
         }
         Arrays.stream(Objects.requireNonNull(f.listFiles())).filter(x -> !x.isDirectory() && x.getName().endsWith(".jar")).forEach(this::loadAddon);
-        plugin.log("Loaded " + getLoadedAddons().size() + " addons.");
+        plugin.log("已加载 " + getLoadedAddons().size() + " 个扩展.");
 
         if (!getLoadedAddons().isEmpty()) {
             sortAddons();
@@ -131,8 +131,8 @@ public class AddonsManager {
         // Checks if this addon is compatible with the current BentoBox version.
         if (!isAddonCompatibleWithBentoBox(addon)) {
             // It is not, abort.
-            plugin.logError("Cannot load " + addon.getDescription().getName() + " because it requires BentoBox version " + addon.getDescription().getApiVersion() + " or greater.");
-            plugin.logError("NOTE: Please update BentoBox.");
+            plugin.logError("无法加载扩展 " + addon.getDescription().getName() + " 因为你的 BentoBox 版本过低，请升级至 " + addon.getDescription().getApiVersion() + " 以上.");
+            plugin.logError("注意：我说的是升级 BentoBox.");
             addon.setState(State.INCOMPATIBLE);
             return;
         }
@@ -163,11 +163,11 @@ public class AddonsManager {
      */
     public void enableAddons() {
         if (getLoadedAddons().isEmpty()) return;
-        plugin.log("Enabling addons...");
+        plugin.log("启用扩展中...");
         getLoadedAddons().forEach(this::enableAddon);
         // Set perms for enabled addons
         this.getEnabledAddons().forEach(this::setPerms);
-        plugin.log("Addons successfully enabled.");
+        plugin.log("扩展已启用.");
     }
 
     boolean setPerms(Addon addon) {
@@ -179,7 +179,7 @@ public class AddonsManager {
                 try {
                     registerPermission(perms, perm);
                 } catch (InvalidAddonDescriptionException e) {
-                    plugin.logError("Addon " + addon.getDescription().getName() + ": " + e.getMessage());
+                    plugin.logError("扩展 " + addon.getDescription().getName() + ": " + e.getMessage());
                 }
             }
         }
@@ -189,7 +189,7 @@ public class AddonsManager {
     void registerPermission(ConfigurationSection perms, String perm) throws InvalidAddonDescriptionException {
         PermissionDefault pd = PermissionDefault.getByName(perms.getString(perm + DEFAULT));
         if (pd == null) {
-            throw new InvalidAddonDescriptionException("Permission default is invalid in addon.yml: " + perm + DEFAULT);
+            throw new InvalidAddonDescriptionException("addon.yml 中设置的默认权限无效: " + perm + DEFAULT);
         }
         String desc = perms.getString(perm + ".description");
         // Replace placeholders for Game Mode Addon names
@@ -231,13 +231,13 @@ public class AddonsManager {
             }
             new AddonEvent().builder().addon(addon).reason(AddonEvent.Reason.ENABLE).build();
             addon.setState(Addon.State.ENABLED);
-            plugin.log("Enabling " + addon.getDescription().getName() + "...");
+            plugin.log("启用 " + addon.getDescription().getName() + " 中...");
         } catch (NoClassDefFoundError | NoSuchMethodError | NoSuchFieldError e) {
             // Looks like the addon is incompatible, because it tries to refer to missing classes...
             handleAddonIncompatibility(addon);
             StringBuilder a = new StringBuilder();
             addon.getDescription().getAuthors().forEach(author -> a.append(author).append(" "));
-            plugin.getLogger().log(Level.SEVERE, "Please report this stack trace to the addon's author(s): " + a.toString(), e);
+            plugin.getLogger().log(Level.SEVERE, "请向扩展作者反馈此堆栈跟踪: " + a.toString(), e);
         } catch (Exception e) {
             // Unhandled exception. We'll give a bit of debug here.
             handleAddonError(addon, e);
@@ -252,9 +252,9 @@ public class AddonsManager {
     private void handleAddonIncompatibility(@NonNull Addon addon) {
         // Set the AddonState as "INCOMPATIBLE".
         addon.setState(Addon.State.INCOMPATIBLE);
-        plugin.logWarning("Skipping " + addon.getDescription().getName() + " as it is incompatible with the current version of BentoBox or of server software...");
-        plugin.logWarning("NOTE: The addon is referring to no longer existing classes.");
-        plugin.logWarning("NOTE: DO NOT report this as a bug from BentoBox.");
+        plugin.logWarning("扩展 " + addon.getDescription().getName() + " 已被忽略因为它与 BentoBox 或服务器版本不兼容");
+        plugin.logWarning("注意: 此扩展正在引用不存在的类.");
+        plugin.logWarning("注意: 这不是 BentoBox 的 bug.");
     }
 
     private boolean isAddonCompatibleWithBentoBox(@NonNull Addon addon) {
@@ -295,7 +295,7 @@ public class AddonsManager {
     private void handleAddonError(@NonNull Addon addon, @NonNull Throwable throwable) {
         // Set the AddonState as "ERROR".
         addon.setState(Addon.State.ERROR);
-        plugin.logError("Skipping " + addon.getDescription().getName() + " due to an unhandled exception...");
+        plugin.logError("由于无法处理的错误 " + addon.getDescription().getName() + " 已被禁用...");
         // Send stacktrace, required for addon development
         plugin.logStacktrace(throwable);
     }
@@ -316,10 +316,10 @@ public class AddonsManager {
      */
     public void disableAddons() {
         if (!getEnabledAddons().isEmpty()) {
-            plugin.log("Disabling addons...");
+            plugin.log("禁用扩展中...");
             // Disable addons
             getEnabledAddons().forEach(this::disable);
-            plugin.log("Addons successfully disabled.");
+            plugin.log("扩展禁用成功.");
         }
         // Unregister all commands
         plugin.getCommandsManager().unregisterCommands();
@@ -346,7 +346,7 @@ public class AddonsManager {
         // Obtain the addon.yml file
         JarEntry entry = jar.getJarEntry("addon.yml");
         if (entry == null) {
-            throw new InvalidAddonFormatException("Addon '" + jar.getName() + "' doesn't contains addon.yml file");
+            throw new InvalidAddonFormatException("扩展 '" + jar.getName() + "' 没有 addon.yml 文件");
         }
         // Open a reader to the jar
         BufferedReader reader = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)));
@@ -434,7 +434,7 @@ public class AddonsManager {
             Addon a = addonsIterator.next();
             for (String dependency : a.getDescription().getDependencies()) {
                 if (!names.contains(dependency)) {
-                    plugin.logError(a.getDescription().getName() + " has dependency on " + dependency + " that does not exist. Addon will not load!");
+                    plugin.logError(a.getDescription().getName() + " 需要前置 " + dependency + ". 请先安装这些依赖项!");
                     addonsIterator.remove();
                     break;
                 }
@@ -508,12 +508,12 @@ public class AddonsManager {
         plugin.getFlagsManager().unregister(addon);
         // Disable
         if (addon.isEnabled()) {
-            plugin.log("Disabling " + addon.getDescription().getName() + "...");
+            plugin.log("禁用 " + addon.getDescription().getName() + "中...");
             try {
                 addon.onDisable();
             } catch (Exception e) {
-                plugin.logError("Error occured when disabling addon " + addon.getDescription().getName());
-                plugin.logError("Report this to the addon's author(s)");
+                plugin.logError("禁用扩展时发生错误 " + addon.getDescription().getName());
+                plugin.logError("请反馈扩展作者");
                 addon.getDescription().getAuthors().forEach(plugin::logError);
                 plugin.logStacktrace(e);
             }

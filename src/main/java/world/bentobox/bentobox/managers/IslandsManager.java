@@ -308,7 +308,7 @@ public class IslandsManager {
         while (handler.objectExists(island.getUniqueId())) {
             // This should never happen, so although this is a potential infinite loop I'm going to leave it here because
             // it will be bad if this does occur and the server should crash.
-            plugin.logWarning("Duplicate island UUID occurred");
+            plugin.logWarning("岛屿 UUID 重复");
             island.setUniqueId(gmName + UUID.randomUUID().toString());
         }
         if (islandCache.addIsland(island)) {
@@ -858,7 +858,7 @@ public class IslandsManager {
         // Attempt to load islands
         for (Island island : handler.loadObjects()) {
             if (island == null) {
-                plugin.logWarning("Null island when loading...");
+                plugin.logWarning("发现无效岛屿...");
                 continue;
             }
             if (island.isDeleted()) {
@@ -897,8 +897,8 @@ public class IslandsManager {
             }
         }
         if (!toQuarantine.isEmpty()) {
-            plugin.logError(toQuarantine.size() + " islands could not be loaded successfully; moving to trash bin.");
-            plugin.logError(unowned + " are unowned, " + owned + " are owned.");
+            plugin.logError(toQuarantine.size() + " 个岛屿无法成功加载; 正在移动到回收站.");
+            plugin.logError("其中有 " + unowned + " 个岛屿无岛主, " + owned + " 个岛屿有岛主.");
 
             toQuarantine.forEach(handler::saveObjectAsync);
             // Check if there are any islands with duplicate islands
@@ -910,15 +910,15 @@ public class IslandsManager {
                         .filter(n -> !duplicatedUUIDRemovedSet.add(n))
                         .collect(Collectors.toSet());
                 if (!duplicated.isEmpty()) {
-                    plugin.logError("**** Owners that have more than one island = " + duplicated.size());
+                    plugin.logError("**** 发现有岛主拥有多个岛屿：" + duplicated.size());
                     for (UUID uuid : duplicated) {
                         Set<Island> set = islandCache.getIslands().stream().filter(i -> uuid.equals(i.getOwner())).collect(Collectors.toSet());
-                        plugin.logError(plugin.getPlayers().getName(uuid) + "(" + uuid.toString() + ") has " + set.size() + " islands:");
+                        plugin.logError(plugin.getPlayers().getName(uuid) + "(" + uuid.toString() + ") 有 " + set.size() + " 个岛屿:");
                         set.forEach(i -> {
-                            plugin.logError("Island at " + i.getCenter());
-                            plugin.logError("Island unique ID = " + i.getUniqueId());
+                            plugin.logError("岛屿位于 " + i.getCenter());
+                            plugin.logError("岛屿唯一 ID 为 " + i.getUniqueId());
                         });
-                        plugin.logError("You should find out which island is real and delete the uniqueID from the database for the bogus one.");
+                        plugin.logError("你应该找到真正的岛屿并从数据库中删除假岛数据.");
                         plugin.logError("");
                     }
                 }
@@ -1039,7 +1039,7 @@ public class IslandsManager {
             try {
                 handler.saveObjectAsync(island);
             } catch (Exception e) {
-                plugin.logError("Could not save island to database when running sync! " + e.getMessage());
+                plugin.logError("无法保存岛屿信息到数据库! " + e.getMessage());
             }
         }
     }
@@ -1143,8 +1143,7 @@ public class IslandsManager {
                 if (range != island.getProtectionRange()) {
                     user.sendMessage("commands.admin.setrange.range-updated", TextVariables.NUMBER, String.valueOf(range));
                     target.sendMessage("commands.admin.setrange.range-updated", TextVariables.NUMBER, String.valueOf(range));
-                    plugin.log("Setowner: Island protection range changed from " + island.getProtectionRange() + " to "
-                            + range + " for " + user.getName() + " due to permission.");
+                    plugin.log("岛主变化: " + user.getName() + " 的岛屿保护范围根据其所拥有的权限从 " + island.getProtectionRange() + " 变为了 " + range + ".");
 
                     // Get old range for event
                     int oldRange = island.getProtectionRange();
@@ -1276,7 +1275,7 @@ public class IslandsManager {
     public boolean switchIsland(World world, UUID target, Island island) {
         // Remove trashed island from trash
         if (!quarantineCache.containsKey(island.getOwner()) || !quarantineCache.get(island.getOwner()).remove(island)) {
-            plugin.logError("Could not remove island from trash");
+            plugin.logError("无法从回收站中删除岛屿");
             return false;
         }
         // Remove old island from cache if it exists
@@ -1291,19 +1290,19 @@ public class IslandsManager {
             quarantineCache.computeIfAbsent(target, k -> new ArrayList<>()).add(oldIsland);
             // Save old island
             handler.saveObjectAsync(oldIsland).thenAccept(result -> {
-                if (!result)  plugin.logError("Could not save trashed island in database");
+                if (!result)  plugin.logError("无法保存回收站岛屿信息到数据库");
             });
         }
         // Restore island from trash
         island.setDoNotLoad(false);
         // Add new island to cache
         if (!islandCache.addIsland(island)) {
-            plugin.logError("Could not add recovered island to cache");
+            plugin.logError("无法添加已恢复岛屿至缓存");
             return false;
         }
         // Save new island
         handler.saveObjectAsync(island).thenAccept(result -> {
-            if (!result)  plugin.logError("Could not save recovered island to database");
+            if (!result)  plugin.logError("无法保存已恢复岛屿信息到数据库");
         });
         return true;
     }

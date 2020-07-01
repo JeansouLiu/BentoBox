@@ -188,7 +188,7 @@ public class IslandWorldManager {
             if (settings.isEndGenerate()) {
                 this.getEndWorld(world).setDifficulty(diff);
             }
-            plugin.log("Added world " + friendlyName + " (" + world.getDifficulty() + ")");
+            plugin.log("已添加世界 " + friendlyName + " (" + world.getDifficulty() + ")");
         });
 
     }

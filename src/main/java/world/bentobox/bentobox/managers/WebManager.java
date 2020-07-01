@@ -65,15 +65,15 @@ public class WebManager {
     public void requestGitHubData() {
         getGitHub().ifPresent(gh -> {
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("Downloading data from GitHub...");
-                plugin.log("Updating the Catalog...");
+                plugin.log("正在从 GitHub 下载数据...");
+                plugin.log("更新目录中...");
             }
             GitHubRepository weblinkRepo;
             try {
                 weblinkRepo = new GitHubRepository(gh, "BentoBoxWorld/weblink");
             } catch (Exception e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.logError("An unhandled exception occurred when connecting to the GitHub weblink..");
+                    plugin.logError("连接到 GitHub 时发生未知错误...");
                     plugin.logStacktrace(e);
                 }
                 weblinkRepo = null;
@@ -90,7 +90,7 @@ public class WebManager {
             }
 
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("Updating Contributors information...");
+                plugin.log("更新贡献者信息中...");
             }
 
             List<String> repositories = new ArrayList<>();
@@ -109,7 +109,7 @@ public class WebManager {
 
             /* Download the contributors */
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("Gathering contribution data for: " + String.join(", ", repositories));
+                plugin.log("正在为: " + String.join(", ", repositories) + " 收集贡献者信息");
             }
 
             for (String repository : repositories) {
@@ -118,7 +118,7 @@ public class WebManager {
                     addonRepo = new GitHubRepository(gh, repository);
                 } catch (Exception e) {
                     if (plugin.getSettings().isLogGithubDownloadData()) {
-                        plugin.logError("An unhandled exception occurred when gathering contributors data from the '" + repository + "' repository...");
+                        plugin.logError("为仓库 '" + repository + "' 收集贡献者信息时出错...");
                         plugin.logStacktrace(e);
                     }
                     addonRepo = null;
@@ -130,7 +130,7 @@ public class WebManager {
 
             // People were concerned that the download took ages, so we need to tell them it's over now.
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("Successfully downloaded data from GitHub.");
+                plugin.log("从 GitHub 下载数据成功.");
             }
         });
     }
@@ -148,7 +148,7 @@ public class WebManager {
                 }));
             } catch (JsonParseException e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.log("Could not update the Catalog Tags: the gathered JSON data is malformed.");
+                    plugin.log("无法更新目录标签: JSON 数据格式有误.");
                 }
             }
         }
@@ -165,7 +165,7 @@ public class WebManager {
                 }));
             } catch (JsonParseException e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.log("Could not update the Catalog Topics: the gathered JSON data is malformed.");
+                    plugin.log("无法更新目录主题: JSON 数据格式有误.");
                 }
             }
         }
@@ -182,7 +182,7 @@ public class WebManager {
                 catalog.getAsJsonArray("addons").forEach(addon -> addonsCatalog.add(new CatalogEntry(addon.getAsJsonObject())));
             } catch (JsonParseException e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.log("Could not update the Catalog content: the gathered JSON data is malformed.");
+                    plugin.log("无法更新目录内容: JSON 数据格式有误.");
                 }
             }
         }
@@ -204,7 +204,7 @@ public class WebManager {
             // Fail silently
         } catch (Exception e) {
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.logError("An unhandled exception occurred when downloading '" + fileName + "' from GitHub...");
+                plugin.logError("从 GitHub 下载 '" + fileName + "' 时出错...");
                 plugin.logStacktrace(e);
             }
         }

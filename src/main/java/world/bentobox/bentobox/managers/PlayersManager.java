@@ -142,7 +142,7 @@ public class PlayersManager {
                 if (player == null) {
                     player = new Players(plugin, playerUUID);
                     // Corrupted database entry
-                    plugin.logError("Corrupted player database entry for " + playerUUID + " - unrecoverable. Recreated.");
+                    plugin.logError("玩家 " + playerUUID + " 的数据库数据已损坏 - 无法恢复. 已重建.");
                     player.setUniqueId(playerUUID.toString());
                 }
             } else {

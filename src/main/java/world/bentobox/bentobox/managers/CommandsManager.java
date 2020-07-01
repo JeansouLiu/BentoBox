@@ -34,11 +34,11 @@ public class CommandsManager {
                 commandPrefix = command.getAddon().getDescription().getName().toLowerCase(Locale.ENGLISH);
             }
             if (!commandMap.register(commandPrefix, command)) {
-                BentoBox.getInstance().logError("Failed to register command " + commandPrefix + " " + command.getLabel());
+                BentoBox.getInstance().logError("向服务器注册指令失败 " + commandPrefix + " " + command.getLabel());
             }
         }
         catch(Exception exception){
-            Bukkit.getLogger().severe("Bukkit server commandMap method is not there! This means no commands can be registered!");
+            Bukkit.getLogger().severe("Bukkit 服务器 commandMap 方法不存在! 你将无法执行指令!");
         }
     }
 

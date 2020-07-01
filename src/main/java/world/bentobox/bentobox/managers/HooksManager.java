@@ -27,11 +27,11 @@ public class HooksManager {
 
     public void registerHook(@NonNull Hook hook) {
         if (hook.isPluginAvailable()) {
-            plugin.log("Hooking with " + hook.getPluginName() + "...");
+            plugin.log("正在绑定插件 " + hook.getPluginName() + "...");
             if (hook.hook()) {
                 hooks.add(hook);
             } else {
-                plugin.logError("Could not hook with " + hook.getPluginName() + ((hook.getFailureCause() != null) ? " because: " + hook.getFailureCause() : "") + ". Skipping...");
+                plugin.logError("无法绑定 " + hook.getPluginName() + ((hook.getFailureCause() != null) ? " 原因: " + hook.getFailureCause() : "") + ". 已忽略...");
             }
         }
         // Do not tell the user if we couldn't hook with a plugin which is not available.
