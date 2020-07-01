@@ -41,7 +41,7 @@ public class PlaceholderAPIHook extends PlaceholderHook {
 
     @Override
     public String getFailureCause() {
-        return "could not register BentoBox's expansion";
+        return "注册 BentoBox 变量失败";
     }
 
     /**
