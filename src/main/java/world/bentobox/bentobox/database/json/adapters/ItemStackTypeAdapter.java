@@ -48,7 +48,7 @@ public class ItemStackTypeAdapter extends TypeAdapter<ItemStack> {
             type = type.substring(0, type.indexOf('\n'));
             Material m = Material.matchMaterial(type);            
             if (m == null) {
-                BentoBox.getInstance().logWarning("Unknown material: " + type);
+                BentoBox.getInstance().logWarning("未知物品: " + type);
                 return new ItemStack(Material.AIR);
             }
 
