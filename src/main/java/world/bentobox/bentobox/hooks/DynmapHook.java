@@ -84,6 +84,6 @@ public class DynmapHook extends Hook {
 
     @Override
     public String getFailureCause() {
-        return "the version of dynmap you're using is incompatible with this hook. Use a newer version.";
+        return "dynmap 版本太低. 请升级.";
     }
 }

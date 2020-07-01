@@ -37,7 +37,7 @@ public class VaultHook extends Hook {
 
     @Override
     public String getFailureCause() {
-        return "no plugin supporting economy has been found";
+        return "未发现经济插件";
     }
 
     public Economy getEconomy() {
@@ -65,7 +65,7 @@ public class VaultHook extends Hook {
      */
     public EconomyResponse withdraw(User user, double amount) {
         if (!user.isOfflinePlayer()) {
-            throw new IllegalArgumentException("User must be a Player or an OfflinePlayer");
+            throw new IllegalArgumentException("玩家不存在");
         }
         if (amount < 0.0D) {
             throw new IllegalArgumentException(AMOUNT_MUST_BE_POSITIVE);
@@ -81,7 +81,7 @@ public class VaultHook extends Hook {
      */
     public EconomyResponse deposit(User user, double amount) {
         if (!user.isOfflinePlayer()) {
-            throw new IllegalArgumentException("User must be a Player or an OfflinePlayer");
+            throw new IllegalArgumentException("玩家不存在");
         }
         if (amount < 0.0D) {
             throw new IllegalArgumentException(AMOUNT_MUST_BE_POSITIVE);
