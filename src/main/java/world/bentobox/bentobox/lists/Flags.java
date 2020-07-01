@@ -477,7 +477,7 @@ public final class Flags {
                     try {
                         return (Flag)field.get(null);
                     } catch (IllegalArgumentException | IllegalAccessException e) {
-                        Bukkit.getLogger().severe("Could not get Flag values " + e.getMessage());
+                        Bukkit.getLogger().severe("未知设置 " + e.getMessage());
                     }
                     return null;
                 }).collect(Collectors.toList());
