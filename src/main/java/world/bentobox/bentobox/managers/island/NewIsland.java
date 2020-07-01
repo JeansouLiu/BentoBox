@@ -99,7 +99,7 @@ public class NewIsland {
          */
         public Builder reason(Reason reason) {
             if (!reason.equals(Reason.CREATE) && !reason.equals(Reason.RESET)) {
-                throw new IllegalArgumentException("Reason must be CREATE or RESET.");
+                throw new IllegalArgumentException("只能是 CREATE 或 RESET.");
             }
             this.reason2 = reason;
             return this;
@@ -149,7 +149,7 @@ public class NewIsland {
                 NewIsland newIsland = new NewIsland(this);
                 return newIsland.getIsland();
             }
-            throw new IOException("Insufficient parameters. Must have a user!");
+            throw new IOException("参数不足. 必须指定一个玩家!");
         }
     }
 
@@ -169,21 +169,21 @@ public class NewIsland {
                 island.setReserved(false);
             } else {
                 // This should never happen unless we allow another way to paste over islands without reserving
-                plugin.logError("New island for user " + user.getName() + " was not reserved!");
+                plugin.logError("玩家 " + user.getName() + " 的新岛屿未保存!");
             }
         }
         // If the reservation fails, then we need to make a new island anyway
         if (next == null) {
             next = this.locationStrategy.getNextLocation(world);
             if (next == null) {
-                plugin.logError("Failed to make island - no unoccupied spot found.");
-                plugin.logError("If the world was imported, try multiple times until all unowned islands are known.");
+                plugin.logError("创建岛屿失败 - 空间不足.");
+                plugin.logError("如果世界是导入的, 多尝试几次直至所有未领取的岛屿都被领取.");
                 throw new IOException("commands.island.create.cannot-create-island");
             }
             // Add to the grid
             island = plugin.getIslands().createIsland(next, user.getUniqueId());
             if (island == null) {
-                plugin.logError("Failed to make island! Island could not be added to the grid.");
+                plugin.logError("创建岛屿失败! 无法在坐标格中加入岛屿.");
                 throw new IOException("commands.island.create.unable-create-island");
             }
         }
