@@ -246,7 +246,7 @@ public class PortalTeleportationListener implements Listener {
                             // No need to use portal because there will be no portal on the other end
                             .build());
                 } else {
-                    plugin.logError("Could not paste default island in nether or end. Is there a nether-island or end-island blueprint?");
+                    plugin.logError("生成末地和下界岛屿失败. 蓝图是否存在?");
                 }
             }
         });

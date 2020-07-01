@@ -77,7 +77,7 @@ public class JoinLeaveListener implements Listener {
             players.setPlayerName(user);
             players.save(playerUUID);
         } else {
-            plugin.logWarning("Player that just logged in has no name! " + playerUUID.toString());
+            plugin.logWarning("刚刚加入服务器的玩家没有名字! " + playerUUID.toString());
         }
 
         // If mobs have to be removed when a player joins, then wipe all the mobs on his island.
