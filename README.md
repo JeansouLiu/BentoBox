@@ -9,4 +9,4 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=BentoBoxWorld_BentoBox&metric=bugs)](https://sonarcloud.io/dashboard?id=BentoBoxWorld_BentoBox)
 
 详细介绍见 https://www.mcbbs.net/thread-846318-1-1.html
-汉化进度 
+<br>汉化进度 59%
