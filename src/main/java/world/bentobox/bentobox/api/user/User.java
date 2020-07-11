@@ -18,6 +18,7 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -321,7 +322,7 @@ public class User {
                 String[] spl = permission.split(permPrefix);
                 if (spl.length > 1) {
                     if (!NumberUtils.isNumber(spl[1])) {
-                        plugin.logError("Player " + player.getName() + " has permission: '" + permission + "' <-- the last part MUST be a number! Ignoring...");
+                        plugin.logError("玩家 " + player.getName() + " 所拥有的权限为: '" + permission + "' <-- 该权限最后必须为数字! 将使用默认值替代...");
                     } else {
                         int v = Integer.parseInt(spl[1]);
                         if (v < 0) {
@@ -348,7 +349,7 @@ public class User {
     public String getTranslation(World world, String reference, String... variables) {
         // Get translation.
         String addonPrefix = plugin.getIWM()
-                .getAddon(world).map(a -> a.getDescription().getName().toLowerCase() + ".").orElse("");
+                .getAddon(world).map(a -> a.getDescription().getName().toLowerCase(Locale.ENGLISH) + ".").orElse("");
         return translate(addonPrefix, reference, variables);
     }
 
@@ -362,7 +363,7 @@ public class User {
      */
     public String getTranslation(String reference, String... variables) {
         // Get addonPrefix
-        String addonPrefix = addon == null ? "" : addon.getDescription().getName().toLowerCase() + ".";
+        String addonPrefix = addon == null ? "" : addon.getDescription().getName().toLowerCase(Locale.ENGLISH) + ".";
         return translate(addonPrefix, reference, variables);
     }
 
@@ -532,7 +533,15 @@ public class User {
      * @return true if the command was successful, otherwise false
      */
     public boolean performCommand(String command) {
-        return player.performCommand(command);
+        PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(getPlayer(), command);
+        Bukkit.getPluginManager().callEvent(event);
+
+        // only perform the command, if the event wasn't cancelled by an other plugin:
+        if (!event.isCancelled()) {
+            return getPlayer().performCommand(event.getMessage());
+        }
+        // Cancelled, but it was recognized, so return true
+        return true;
     }
 
     /**
@@ -556,7 +565,7 @@ public class User {
     public void spawnParticle(Particle particle, Particle.DustOptions dustOptions, double x, double y, double z) {
         if (particle.equals(Particle.REDSTONE) && dustOptions == null) {
             // Security check that will avoid later unexpected exceptions.
-            throw new IllegalArgumentException("A non-null Particle.DustOptions must be provided when using Particle.REDSTONE as particle.");
+            throw new IllegalArgumentException("必须提供一个非 null 的 Particle.DustOptions 来使用 Particle.REDSTONE 粒子效果.");
         }
 
         // Check if this particle is beyond the viewing distance of the server
