@@ -1,5 +1,6 @@
 package world.bentobox.bentobox.api.addons.request;
 
+import java.util.Locale;
 import java.util.Map;
 
 public abstract class AddonRequestHandler
@@ -7,7 +8,7 @@ public abstract class AddonRequestHandler
 	private String label;
 
 	public AddonRequestHandler(String label) {
-		this.label = label.toLowerCase();
+		this.label = label.toLowerCase(Locale.ENGLISH);
 	}
 
 	/**
