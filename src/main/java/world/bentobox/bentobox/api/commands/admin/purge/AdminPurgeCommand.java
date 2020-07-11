@@ -1,5 +1,6 @@
 package world.bentobox.bentobox.api.commands.admin.purge;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.events.island.IslandEvent.IslandDeletedEvent;
 import world.bentobox.bentobox.api.localization.TextVariables;
@@ -119,13 +121,26 @@ public class AdminPurgeCommand extends CompositeCommand implements Listener {
     }
 
     Set<String> getOldIslands(int days) {
+        getPlugin().getIslands().getIslands().stream()
+        .filter(i -> !i.isSpawn())
+        .filter(i -> !i.getPurgeProtected())
+        .filter(i -> i.getWorld().equals(this.getWorld()))
+        .filter(Island::isOwned)
+        .filter(i -> i.getMembers().size() == 1)
+        .filter(i -> ((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) > days)
+        .forEach(i -> {
+            Date date = new Date(Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed());
+            BentoBox.getInstance().log("将清除 " +
+                    BentoBox.getInstance().getPlayers().getName(i.getOwner()) +
+                    " 最后登录于 " + (int)((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) + " 天前的岛屿. " + date);
+        });
         return getPlugin().getIslands().getIslands().stream()
                 .filter(i -> !i.isSpawn())
                 .filter(i -> !i.getPurgeProtected())
                 .filter(i -> i.getWorld().equals(this.getWorld()))
                 .filter(Island::isOwned)
                 .filter(i -> i.getMembers().size() == 1)
-                .filter(i -> (System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) > days * 1000 * 24 * 3600)
+                .filter(i -> ((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) > days)
                 .map(Island::getUniqueId)
                 .collect(Collectors.toSet());
     }
