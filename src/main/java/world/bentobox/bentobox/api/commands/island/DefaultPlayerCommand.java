@@ -106,11 +106,10 @@ public abstract class DefaultPlayerCommand extends CompositeCommand
             // Default command if user has an island.
             String command = this.<GameModeAddon>getAddon().getWorldSettings().getDefaultPlayerAction();
 
-            // If command exists, the call it.
-            // Otherwise, just use "go" command.
-            if (command != null && this.getSubCommand(command).isPresent())
+            // Perform command or use "go" command.
+            if (command != null && user.performCommand(label + " " + command))
             {
-                return this.getSubCommand(command).get().call(user, label, Collections.emptyList());
+                return true;
             }
             else
             {
@@ -124,11 +123,10 @@ public abstract class DefaultPlayerCommand extends CompositeCommand
             // Default command if user does not have an island.
             String command = this.<GameModeAddon>getAddon().getWorldSettings().getDefaultNewPlayerAction();
 
-            // If command exists, the call it.
-            // Otherwise, just use "create" command.
-            if (command != null && this.getSubCommand(command).isPresent())
+            // Perform command or use "create" command.
+            if (command != null && user.performCommand(label + " " + command))
             {
-                return this.getSubCommand(command).get().call(user, label, Collections.emptyList());
+                return true;
             }
             else
             {
