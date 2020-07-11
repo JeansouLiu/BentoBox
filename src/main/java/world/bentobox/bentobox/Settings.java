@@ -3,6 +3,7 @@ package world.bentobox.bentobox;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Material;
 import world.bentobox.bentobox.api.configuration.ConfigComment;
 import world.bentobox.bentobox.api.configuration.ConfigEntry;
 import world.bentobox.bentobox.api.configuration.ConfigObject;
@@ -101,17 +102,28 @@ public class Settings implements ConfigObject {
     @ConfigComment("数据表前缀. 若使用文件存储方式请无视此项.")
     @ConfigComment("仅允许 A-Z, a-z, 0-9. 其它字符将被替换为下划线(_).")
     @ConfigComment("如果你的多个 BentoBox 服务器使用同一个数据库，请务必设置此项.")
+    @ConfigComment("请注意长度 - 一般不超过63字节")
     @ConfigEntry(path = "general.database.prefix-character", since = "1.13.0")
     private String databasePrefix = "";
+
+    @ConfigComment("MongoDB 客户端连接 URI")
+    @ConfigComment("详见: https://docs.mongodb.com/manual/reference/connection-string/")
+    @ConfigEntry(path = "general.database.mongodb-connection-uri", since = "1.14.0")
+    private String mongodbConnectionUri = "";
 
     @ConfigComment("允许 FTB(https://www.feed-the-beast.com/ 一个 MOD) 模组的自激活仪器(Autonomous Activator)工作 (将会允许虚拟玩家 [CoFH] 放置和破坏方块并拾取物品)")
     @ConfigComment("如果需要的话，在这里添加更多虚拟玩家的名字")
     @ConfigEntry(path = "general.fakeplayers", experimental = true)
     private Set<String> fakePlayers = new HashSet<>();
 
+    /* PANELS */
     @ConfigComment("当玩家点击菜单之外的区域时关闭菜单")
     @ConfigEntry(path = "panel.close-on-click-outside")
     private boolean closePanelOnClickOutside = true;
+
+    @ConfigComment("菜单空白区域填充的物品")
+    @ConfigEntry(path = "panel.filler-material", since = "1.14.0")
+    private Material panelFillerMaterial = Material.LIGHT_BLUE_STAINED_GLASS_PANE;
 
     /*
      * Logs
@@ -633,7 +645,7 @@ public class Settings implements ConfigObject {
      */
     public String getDatabasePrefix() {
         if (databasePrefix == null) databasePrefix = "";
-        return databasePrefix.isEmpty() ? "" : databasePrefix.replaceAll("[^a-zA-Z0-9]", "_").substring(0,1);
+        return databasePrefix.isEmpty() ? "" : databasePrefix.replaceAll("[^a-zA-Z0-9]", "_");
     }
 
     /**
@@ -644,20 +656,58 @@ public class Settings implements ConfigObject {
     }
 
 	/**
-	 * Returns whether islands, when reset, should be kept or deleted.
-	 * @return {@code true} if islands, when reset, should be kept; {@code false} otherwise.
-	 * @since 1.13.0
-	 */
-	public boolean isKeepPreviousIslandOnReset() {
-		return keepPreviousIslandOnReset;
-	}
+     * Returns whether islands, when reset, should be kept or deleted.
+     * @return {@code true} if islands, when reset, should be kept; {@code false} otherwise.
+     * @since 1.13.0
+     */
+    public boolean isKeepPreviousIslandOnReset() {
+        return keepPreviousIslandOnReset;
+    }
 
-	/**
-	 * Sets whether islands, when reset, should be kept or deleted.
-	 * @param keepPreviousIslandOnReset {@code true} if islands, when reset, should be kept; {@code false} otherwise.
-	 * @since 1.13.0
-	 */
-	public void setKeepPreviousIslandOnReset(boolean keepPreviousIslandOnReset) {
-		this.keepPreviousIslandOnReset = keepPreviousIslandOnReset;
-	}
+    /**
+     * Sets whether islands, when reset, should be kept or deleted.
+     * @param keepPreviousIslandOnReset {@code true} if islands, when reset, should be kept; {@code false} otherwise.
+     * @since 1.13.0
+     */
+    public void setKeepPreviousIslandOnReset(boolean keepPreviousIslandOnReset) {
+        this.keepPreviousIslandOnReset = keepPreviousIslandOnReset;
+    }
+
+    /**
+     * Returns a MongoDB client connection URI to override default connection options.
+     *
+     * @return mongodb client connection.
+     * @see <a href="https://docs.mongodb.com/manual/reference/connection-string/">MongoDB Documentation</a>
+     * @since 1.14.0
+     */
+    public String getMongodbConnectionUri() {
+        return mongodbConnectionUri;
+    }
+
+    /**
+     * Set the MongoDB client connection URI.
+     * @param mongodbConnectionUri connection URI.
+     * @since 1.14.0
+     */
+    public void setMongodbConnectionUri(String mongodbConnectionUri) {
+        this.mongodbConnectionUri = mongodbConnectionUri;
+    }
+
+    /**
+     * Returns the Material of the item to preferably use when one needs to fill gaps in Panels.
+     * @return the Material of the item to preferably use when one needs to fill gaps in Panels.
+     * @since 1.14.0
+     */
+    public Material getPanelFillerMaterial() {
+        return panelFillerMaterial;
+    }
+
+    /**
+     * Sets the Material of the item to preferably use when one needs to fill gaps in Panels.
+     * @param panelFillerMaterial the Material of the item to preferably use when one needs to fill gaps in Panels.
+     * @since 1.14.0
+     */
+    public void setPanelFillerMaterial(Material panelFillerMaterial) {
+        this.panelFillerMaterial = panelFillerMaterial;
+    }
 }
