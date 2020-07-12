@@ -56,7 +56,7 @@ public class DefaultNewIslandLocationStrategy implements NewIslandLocationStrate
         if (!r.equals(Result.FREE)) {
             // We could not find a free spot within the limit required. It's likely this
             // world is not empty
-            plugin.logError("剩余空间不足! 这个世界是空的吗?");
+            plugin.logError("Could not find a free spot for islands! Is this world empty?");
             plugin.logError("Blocks around center locations: " + result.getOrDefault(Result.BLOCKS_IN_AREA, 0) + " max "
                     + MAX_UNOWNED_ISLANDS);
             plugin.logError("Known islands: " + result.getOrDefault(Result.ISLAND_FOUND, 0) + " max unlimited.");

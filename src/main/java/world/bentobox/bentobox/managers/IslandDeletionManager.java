@@ -49,13 +49,13 @@ public class IslandDeletionManager implements Listener {
         List<IslandDeletion> toBeDeleted = handler.loadObjects();
         List<IslandDeletion> toBeRemoved = new ArrayList<>();
         if (!toBeDeleted.isEmpty()) {
-            plugin.log("有 " + toBeDeleted.size() + " 个岛屿等待删除.");
+            plugin.log("There are " + toBeDeleted.size() + " islands pending deletion.");
             toBeDeleted.forEach(di -> {
                 if (di.getLocation() == null || di.getLocation().getWorld() == null) {
-                    plugin.logError("等待删除的岛屿不在空岛世界里. 忽略中...");
+                    plugin.logError("Island queued for deletion refers to a non-existant game world. Skipping...");
                     toBeRemoved.add(di);
                 } else {
-                    plugin.log("正在删除位于 " + di.getLocation().getWorld().getName() + " " + Util.xyz(di.getLocation().toVector()) + " 的岛屿");
+                    plugin.log("Resuming deletion of island at " + di.getLocation().getWorld().getName() + " " + Util.xyz(di.getLocation().toVector()));
                     inDeletion.add(di.getLocation());
                     new DeleteIslandChunks(plugin, di);
                 }

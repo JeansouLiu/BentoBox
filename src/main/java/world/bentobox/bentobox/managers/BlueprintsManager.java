@@ -12,10 +12,12 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -43,7 +45,6 @@ import world.bentobox.bentobox.blueprints.dataobjects.BlueprintBlock;
 import world.bentobox.bentobox.blueprints.dataobjects.BlueprintBundle;
 import world.bentobox.bentobox.database.json.BentoboxTypeAdapterFactory;
 import world.bentobox.bentobox.database.objects.Island;
-import world.bentobox.bentobox.schems.SchemToBlueprint;
 import world.bentobox.bentobox.util.Util;
 
 /**
@@ -79,7 +80,7 @@ public class BlueprintsManager {
      */
     private final Gson gson;
 
-    private @NonNull BentoBox plugin;
+    private final @NonNull BentoBox plugin;
 
     private @NonNull Set<GameModeAddon> blueprintsLoaded;
 
@@ -122,8 +123,8 @@ public class BlueprintsManager {
         }
 
         if (!folder.exists() && !folder.mkdirs()) {
-            plugin.logError("无法创建 '" + FOLDER_NAME + "' 文件夹!");
-            plugin.logError("请检查读写权限设置.");
+            plugin.logError("Could not create the '" + FOLDER_NAME + "' folder!");
+            plugin.logError("This might be due to incorrectly set-up write permissions on the operating system.");
             return;
         }
 
@@ -132,7 +133,7 @@ public class BlueprintsManager {
             Util.listJarFiles(jar, FOLDER_NAME, BLUEPRINT_BUNDLE_SUFFIX).forEach(name -> addon.saveResource(name, false));
             Util.listJarFiles(jar, FOLDER_NAME, BLUEPRINT_SUFFIX).forEach(name -> addon.saveResource(name, false));
         } catch (IOException e) {
-            plugin.logError("无法从扩展中读取蓝图文件 " + e.getMessage());
+            plugin.logError("Could not load blueprint files from addon jar " + e.getMessage());
         }
     }
 
@@ -185,8 +186,6 @@ public class BlueprintsManager {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             // Load bundles
             blueprintBundles.put(addon, new ArrayList<>());
-            // See if there are any schems that need converting
-            new SchemToBlueprint(plugin).convertSchems(addon);
             if (!loadBundles(addon)) {
                 makeDefaults(addon);
                 loadBundles(addon);
@@ -225,19 +224,19 @@ public class BlueprintsManager {
                     // Make sure there is no existing bundle with the same uniqueId
                     if (blueprintBundles.get(addon).stream().noneMatch(bundle ->  bundle.getUniqueId().equals(bb.getUniqueId()))) {
                         blueprintBundles.get(addon).add(bb);
-                        plugin.log("已加载模板 '" + bb.getUniqueId() + FOR + addon.getDescription().getName() + ".");
+                        plugin.log("Loaded Blueprint Bundle '" + bb.getUniqueId() + FOR + addon.getDescription().getName() + ".");
                         loaded = true;
                     } else {
                         // There is a bundle that already uses this uniqueId.
                         // In that case, we log that and do not load the new bundle.
-                        plugin.logWarning("读取模板失败 '" + file.getName() + FOR + addon.getDescription().getName() + ".");
-                        plugin.logWarning("模板唯一 ID '" + bb.getUniqueId() + "' 已被使用.");
-                        plugin.logWarning("如果你修改了模板文件.");
-                        plugin.logWarning("请检查你的模板配置文件中唯一 ID 是否重复.");
+                        plugin.logWarning("Could not load blueprint bundle '" + file.getName() + FOR + addon.getDescription().getName() + ".");
+                        plugin.logWarning("The uniqueId '" + bb.getUniqueId() + "' is already used by another Blueprint Bundle.");
+                        plugin.logWarning("This can occur if the Blueprint Bundles' files were manually edited.");
+                        plugin.logWarning("Please review your Blueprint Bundles' files and make sure their uniqueIds are not in duplicate.");
                     }
                 }
             } catch (Exception e) {
-                plugin.logError("读取模板 '" + file.getName() + "' 失败. 原因: " + e.getMessage() + ".");
+                plugin.logError("Could not load blueprint bundle '" + file.getName() + "'. Cause: " + e.getMessage() + ".");
                 plugin.logStacktrace(e);
             }
         }
@@ -248,15 +247,15 @@ public class BlueprintsManager {
         BlueprintBundle bb = new BlueprintBundle();
         bb.setIcon(Material.PAPER);
         bb.setUniqueId(DEFAULT_BUNDLE_NAME);
-        bb.setDisplayName("经典模板");
-        bb.setDescription(Collections.singletonList(ChatColor.AQUA + "经典岛屿的模板"));
+        bb.setDisplayName("Default bundle");
+        bb.setDescription(Collections.singletonList(ChatColor.AQUA + "Default bundle of blueprints"));
         return bb;
     }
 
     private Blueprint getDefaultBlueprint() {
         Blueprint defaultBp = new Blueprint();
-        defaultBp.setName("基岩");
-        defaultBp.setDescription(Collections.singletonList(ChatColor.AQUA + "一块基岩"));
+        defaultBp.setName("bedrock");
+        defaultBp.setDescription(Collections.singletonList(ChatColor.AQUA + "A bedrock block"));
         defaultBp.setBedrock(new Vector(0, 0, 0));
         Map<Vector, BlueprintBlock> map = new HashMap<>();
         map.put(new Vector(0, 0, 0), new BlueprintBlock("minecraft:bedrock"));
@@ -270,7 +269,7 @@ public class BlueprintsManager {
      * @param addon addon
      */
     private void makeDefaults(@NonNull GameModeAddon addon) {
-        plugin.logError("未发现模板! 正在创建默认模板.");
+        plugin.logError("No blueprint bundles found! Creating a default one.");
         BlueprintBundle bb = getDefaultBlueprintBundle();
         // Default blueprints
         Blueprint defaultBp = getDefaultBlueprint();
@@ -306,13 +305,11 @@ public class BlueprintsManager {
             String fileName = file.getName().substring(0, file.getName().length() - BLUEPRINT_SUFFIX.length());
             try {
                 Blueprint bp = new BlueprintClipboardManager(plugin, bpf).loadBlueprint(fileName);
-                if (bp.getName() == null) {
-                    bp.setName(fileName);
-                }
+                bp.setName(fileName);
                 blueprints.get(addon).add(bp);
-                plugin.log("已加载蓝图 '" + bp.getName() + FOR + addon.getDescription().getName());
+                plugin.log("Loaded blueprint '" + bp.getName() + FOR + addon.getDescription().getName());
             } catch (Exception e) {
-                plugin.logError("读取模板 " + fileName + " 失败 " + e.getMessage());
+                plugin.logError("Could not load blueprint " + fileName + " " + e.getMessage());
                 plugin.logStacktrace(e);
             }
         }
@@ -329,7 +326,7 @@ public class BlueprintsManager {
         blueprints.putIfAbsent(addon, new ArrayList<>());
         blueprints.get(addon).removeIf(b -> b.getName().equals(bp.getName()));
         blueprints.get(addon).add(bp);
-        plugin.log("新增蓝图 '" + bp.getName() + FOR + addon.getDescription().getName());
+        plugin.log("Added blueprint '" + bp.getName() + FOR + addon.getDescription().getName());
     }
 
     /**
@@ -359,7 +356,7 @@ public class BlueprintsManager {
             try (FileWriter fileWriter = new FileWriter(fileName)) {
                 fileWriter.write(toStore);
             } catch (IOException e) {
-                plugin.logError("保存模板失败: " + e.getMessage());
+                plugin.logError("Could not save blueprint bundle file: " + e.getMessage());
             }
         });
     }
@@ -407,18 +404,22 @@ public class BlueprintsManager {
      */
     public void deleteBlueprint(GameModeAddon addon, String name) {
         List<Blueprint> addonBlueprints = blueprints.get(addon);
-        addonBlueprints.stream().filter(b -> b.getName().equals(name)).forEach(b -> {
-            addonBlueprints.remove(b);
-            blueprints.put(addon, addonBlueprints);
+        Iterator<Blueprint> it = addonBlueprints.iterator();
+        while (it.hasNext()) {
+            Blueprint b = it.next();
+            if (b.getName().equalsIgnoreCase(name)) {
+                it.remove();
+                blueprints.put(addon, addonBlueprints);
 
-            File file = new File(getBlueprintsFolder(addon), name + BLUEPRINT_SUFFIX);
-            // Delete the file
-            try {
-                Files.deleteIfExists(file.toPath());
-            } catch (IOException e) {
-                plugin.logError("删除模板失败 " + e.getLocalizedMessage());
+                File file = new File(getBlueprintsFolder(addon), b.getName() + BLUEPRINT_SUFFIX);
+                // Delete the file
+                try {
+                    Files.deleteIfExists(file.toPath());
+                } catch (IOException e) {
+                    plugin.logError("Could not delete Blueprint " + e.getLocalizedMessage());
+                }
             }
-        });
+        }
     }
 
     /**
@@ -443,49 +444,59 @@ public class BlueprintsManager {
      */
     public boolean paste(GameModeAddon addon, Island island, String name, Runnable task) {
         if (validate(addon, name) == null) {
-            plugin.logError("尝试粘贴 '" + name + "' 时模板为加载!");
+            plugin.logError("Tried to paste '" + name + "' but the bundle is not loaded!");
             return false;
         }
         BlueprintBundle bb = getBlueprintBundles(addon).get(name.toLowerCase(Locale.ENGLISH));
         if (!blueprints.containsKey(addon) || blueprints.get(addon).isEmpty()) {
-            plugin.logError("模板 '" + name + "' 未加载任何蓝图!");
+            plugin.logError("No blueprints loaded for bundle '" + name + "'!");
             return false;
         }
         Blueprint bp = getBlueprints(addon).get(bb.getBlueprint(World.Environment.NORMAL));
         if (bp == null) {
             // Oops, no overworld
             bp = getBlueprints(addon).get("island");
-            plugin.logError("模板中不含主世界蓝图, 将使用默认主世界蓝图");
+            plugin.logError("Blueprint bundle has no normal world blueprint, using default");
             if (bp == null) {
-                plugin.logError("默认蓝图不存在! 请确保 'island.blu' 未被删除!");
+                plugin.logError("NO DEFAULT BLUEPRINT FOUND! Make sure 'island.blu' exists!");
             }
         }
-        // Paste overworld
+        // Paste
         if (bp != null) {
-            new BlueprintPaster(plugin, bp, addon.getOverWorld(), island, task);
+            new BlueprintPaster(plugin, bp, addon.getOverWorld(), island).paste().thenAccept(b -> {
+                pasteNether(addon, bb, island).thenAccept(b2 ->
+                pasteEnd(addon, bb, island).thenAccept(b3 -> Bukkit.getScheduler().runTask(plugin, task)));
+            });
         }
-        // Make nether island
+        return true;
+
+    }
+
+    private CompletableFuture<Boolean> pasteNether(GameModeAddon addon, BlueprintBundle bb, Island island) {
         if (bb.getBlueprint(World.Environment.NETHER) != null
                 && addon.getWorldSettings().isNetherGenerate()
                 && addon.getWorldSettings().isNetherIslands()
                 && addon.getNetherWorld() != null) {
-            bp = getBlueprints(addon).get(bb.getBlueprint(World.Environment.NETHER));
+            Blueprint bp = getBlueprints(addon).get(bb.getBlueprint(World.Environment.NETHER));
             if (bp != null) {
-                new BlueprintPaster(plugin, bp, addon.getNetherWorld(), island, null);
+                return new BlueprintPaster(plugin, bp, addon.getNetherWorld(), island).paste();
             }
         }
+        return CompletableFuture.completedFuture(false);
+    }
+
+    private CompletableFuture<Boolean> pasteEnd(GameModeAddon addon, BlueprintBundle bb, Island island) {
         // Make end island
         if (bb.getBlueprint(World.Environment.THE_END) != null
                 && addon.getWorldSettings().isEndGenerate()
                 && addon.getWorldSettings().isEndIslands()
                 && addon.getEndWorld() != null) {
-            bp = getBlueprints(addon).get(bb.getBlueprint(World.Environment.THE_END));
+            Blueprint bp = getBlueprints(addon).get(bb.getBlueprint(World.Environment.THE_END));
             if (bp != null) {
-                new BlueprintPaster(plugin, bp, addon.getEndWorld(), island, null);
+                return new BlueprintPaster(plugin, bp, addon.getEndWorld(), island).paste();
             }
         }
-        return true;
-
+        return CompletableFuture.completedFuture(false);
     }
 
     /**
@@ -554,7 +565,7 @@ public class BlueprintsManager {
         try {
             Files.deleteIfExists(fileName.toPath());
         } catch (IOException e) {
-            plugin.logError("无法删除模板 " + e.getLocalizedMessage());
+            plugin.logError("Could not delete Blueprint Bundle " + e.getLocalizedMessage());
         }
     }
 
@@ -577,7 +588,7 @@ public class BlueprintsManager {
         try {
             Files.deleteIfExists(fileName.toPath());
         } catch (IOException e) {
-            plugin.logError("无法删除旧蓝图 " + e.getLocalizedMessage());
+            plugin.logError("Could not delete old Blueprint " + e.getLocalizedMessage());
         }
         // Set new name
         bp.setName(name.toLowerCase(Locale.ENGLISH));

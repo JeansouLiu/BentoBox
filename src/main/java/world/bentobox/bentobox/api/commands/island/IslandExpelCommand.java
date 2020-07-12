@@ -87,8 +87,8 @@ public class IslandExpelCommand extends CompositeCommand {
         }
         // Cannot ban ops
         if (target.isOp() ||
-            target.hasPermission(this.getPermissionPrefix() + "admin.noexpel") ||
-            target.hasPermission(this.getPermissionPrefix() + "mod.bypassexpel")) {
+                target.hasPermission(this.getPermissionPrefix() + "admin.noexpel") ||
+                target.hasPermission(this.getPermissionPrefix() + "mod.bypassexpel")) {
             user.sendMessage(CANNOT_EXPEL);
             return false;
         }

@@ -33,7 +33,7 @@ import world.bentobox.bentobox.database.json.BentoboxTypeAdapterFactory;
  */
 public class BlueprintClipboardManager {
 
-    private static final String LOAD_ERROR = "无法加载蓝图文件 - 文件不存在 : ";
+    private static final String LOAD_ERROR = "Could not load blueprint file - does not exist : ";
 
     private File blueprintFolder;
 
@@ -106,15 +106,15 @@ public class BlueprintClipboardManager {
         try (FileReader fr = new FileReader(file)) {
             bp = gson.fromJson(fr, Blueprint.class);
         } catch (Exception e) {
-            plugin.logError("蓝图配置文件错误: " + zipFile.getName());
-            throw new IOException("蓝图配置文件错误: " + zipFile.getName());
+            plugin.logError("Blueprint has JSON error: " + zipFile.getName());
+            throw new IOException("Blueprint has JSON error: " + zipFile.getName());
         }
         Files.delete(file.toPath());
         // Bedrock check and set
         if (bp.getBedrock() == null) {
             bp.setBedrock(new Vector(bp.getxSize() / 2, bp.getySize() / 2, bp.getzSize() / 2));
             bp.getBlocks().put(bp.getBedrock(), new BlueprintBlock(Material.BEDROCK.createBlockData().getAsString()));
-            plugin.logWarning("蓝图 " + BlueprintsManager.sanitizeFileName(fileName) + BlueprintsManager.BLUEPRINT_SUFFIX + " 中未包含基岩，已在中心自动添加基岩. 你应该检查一下.");
+            plugin.logWarning("Blueprint " + BlueprintsManager.sanitizeFileName(fileName) + BlueprintsManager.BLUEPRINT_SUFFIX + " had no bedrock block in it so one was added automatically in the center. You should check it.");
         }
         return bp;
     }
@@ -130,7 +130,7 @@ public class BlueprintClipboardManager {
             load(fileName);
         } catch (IOException e1) {
             user.sendMessage("commands.admin.blueprint.could-not-load");
-            plugin.logError("蓝图文件不存在: " + BlueprintsManager.sanitizeFileName(fileName) + BlueprintsManager.BLUEPRINT_SUFFIX + " " + e1.getMessage());
+            plugin.logError("Could not load blueprint file: " + BlueprintsManager.sanitizeFileName(fileName) + BlueprintsManager.BLUEPRINT_SUFFIX + " " + e1.getMessage());
             return false;
         }
         user.sendMessage("general.success");
@@ -149,7 +149,7 @@ public class BlueprintClipboardManager {
             user.sendMessage("general.success");
             return true;
         }
-        user.sendMessage("commands.admin.blueprint.could-not-save", "[message]", "保存蓝图缓存失败.");
+        user.sendMessage("commands.admin.blueprint.could-not-save", "[message]", "Could not save temp blueprint file.");
         return false;
     }
 
@@ -160,7 +160,7 @@ public class BlueprintClipboardManager {
      */
     public boolean saveBlueprint(Blueprint blueprint) {
         if (blueprint.getName().isEmpty()) {
-            plugin.logError("蓝图未命名 - 保存失败");
+            plugin.logError("Blueprint name was empty - could not save it");
             return false;
         }
         File file = new File(blueprintFolder, BlueprintsManager.sanitizeFileName(blueprint.getName()));
@@ -168,13 +168,13 @@ public class BlueprintClipboardManager {
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(toStore);
         } catch (IOException e) {
-            plugin.logError("无法保存蓝图缓存: " + file.getName());
+            plugin.logError("Could not save temporary blueprint file: " + file.getName());
             return false;
         }
         try {
             zip(file);
         } catch (IOException e) {
-            plugin.logError("压缩蓝图缓存失败: " + file.getName());
+            plugin.logError("Could not zip temporary blueprint file: " + file.getName());
             return false;
         }
         return true;
@@ -183,7 +183,7 @@ public class BlueprintClipboardManager {
     private void unzip(final String zipFilePath) throws IOException {
         Path path = Paths.get(zipFilePath);
         if (!(path.toFile().exists())) {
-            throw new IOException("文件不存在!");
+            throw new IOException("No file exists!");
         }
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
             ZipEntry entry = zipInputStream.getNextEntry();

@@ -27,8 +27,8 @@ public abstract class DefaultPlayerCommand extends CompositeCommand
     {
         // Register command with alias from config.
         super(addon,
-            addon.getWorldSettings().getPlayerCommandAliases().split(" ")[0],
-            addon.getWorldSettings().getPlayerCommandAliases().split(" "));
+                addon.getWorldSettings().getPlayerCommandAliases().split(" ")[0],
+                addon.getWorldSettings().getPlayerCommandAliases().split(" "));
     }
 
 
@@ -114,8 +114,8 @@ public abstract class DefaultPlayerCommand extends CompositeCommand
             else
             {
                 return this.getSubCommand("go").
-                    map(goCmd -> goCmd.call(user, goCmd.getLabel(), Collections.emptyList())).
-                    orElse(false);
+                        map(goCmd -> goCmd.call(user, goCmd.getLabel(), Collections.emptyList())).
+                        orElse(false);
             }
         }
         else
@@ -131,8 +131,8 @@ public abstract class DefaultPlayerCommand extends CompositeCommand
             else
             {
                 return this.getSubCommand("create").
-                    map(createCmd -> createCmd.call(user, createCmd.getLabel(), Collections.emptyList())).
-                    orElse(false);
+                        map(createCmd -> createCmd.call(user, createCmd.getLabel(), Collections.emptyList())).
+                        orElse(false);
             }
         }
     }

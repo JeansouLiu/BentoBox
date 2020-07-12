@@ -103,8 +103,9 @@ public class PlayersManager {
     /**
      * Get player by UUID. Adds player to cache if not in there already
      * @param uuid of player
-     * @return player object or null if it does not exist
+     * @return player object or null if it does not exist, for example the UUID is null
      */
+    @Nullable
     public Players getPlayer(UUID uuid){
         if (!playerCache.containsKey(uuid)) {
             addPlayer(uuid);
@@ -142,7 +143,7 @@ public class PlayersManager {
                 if (player == null) {
                     player = new Players(plugin, playerUUID);
                     // Corrupted database entry
-                    plugin.logError("玩家 " + playerUUID + " 的数据库数据已损坏 - 无法恢复. 已重建.");
+                    plugin.logError("Corrupted player database entry for " + playerUUID + " - unrecoverable. Recreated.");
                     player.setUniqueId(playerUUID.toString());
                 }
             } else {

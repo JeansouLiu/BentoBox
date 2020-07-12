@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -217,12 +218,30 @@ public class IslandsManager {
     }
 
     /**
+     * Checks if this location is safe for a player to teleport to and loads chunks async to check.
+     *
+     * @param l Location to be checked, not null.
+     * @return a completable future that will be true if safe, otherwise false
+     * @since 1.14.0
+     */
+    public CompletableFuture<Boolean> isSafeLocationAsync(@NonNull Location l) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+        Util.getChunkAtAsync(l).thenRun(() -> {
+            Block ground = l.getBlock().getRelative(BlockFace.DOWN);
+            Block space1 = l.getBlock();
+            Block space2 = l.getBlock().getRelative(BlockFace.UP);
+            result.complete(checkIfSafe(l.getWorld(), ground.getType(), space1.getType(), space2.getType()));
+        });
+        return result;
+    }
+
+    /**
      * Check if a location is safe for teleporting
      * @param world - world
-     * @param material -
-     * @param material2
-     * @param material3
-     * @return
+     * @param ground Material of the block that is going to be the ground
+     * @param space1 Material of the block above the ground
+     * @param space2 Material of the block that is two blocks above the ground
+     * @return {@code true} if the location is considered safe, {@code false} otherwise.
      */
     public boolean checkIfSafe(@Nullable World world, @NonNull Material ground, @NonNull Material space1, @NonNull Material space2) {
         // Ground must be solid, space 1 and 2 must not be solid
@@ -308,7 +327,7 @@ public class IslandsManager {
         while (handler.objectExists(island.getUniqueId())) {
             // This should never happen, so although this is a potential infinite loop I'm going to leave it here because
             // it will be bad if this does occur and the server should crash.
-            plugin.logWarning("岛屿 UUID 重复");
+            plugin.logWarning("Duplicate island UUID occurred");
             island.setUniqueId(gmName + UUID.randomUUID().toString());
         }
         if (islandCache.addIsland(island)) {
@@ -485,9 +504,91 @@ public class IslandsManager {
      * @param location - the location
      * @return Optional Island object
      */
-
     public Optional<Island> getProtectedIslandAt(@NonNull Location location) {
         return getIslandAt(location).filter(i -> i.onIsland(location));
+    }
+
+    /**
+     * Get a safe home location using async chunk loading and set the home location
+     * @param world - world
+     * @param user - user
+     * @param number - number number
+     * @return CompletableFuture with the location found, or null
+     * @since 1.14.0
+     */
+    public CompletableFuture<Location> getAsyncSafeHomeLocation(@NonNull World world, @NonNull User user, int number) {
+        CompletableFuture<Location> result = new CompletableFuture<>();
+        // Check if the world is a gamemode world and the player has an island
+        Location islandLoc = getIslandLocation(world, user.getUniqueId());
+        if (!plugin.getIWM().inWorld(world) || islandLoc == null) {
+            result.complete(null);
+            return result;
+        }
+        // Try the numbered home location first
+        Location defaultHome = plugin.getPlayers().getHomeLocation(world, user, 1);
+        Location numberedHome = plugin.getPlayers().getHomeLocation(world, user, number);
+        Location l = numberedHome != null ? numberedHome : defaultHome;
+        if (l != null) {
+            Util.getChunkAtAsync(l).thenRun(() -> {
+                // Check if it is safe
+                if (isSafeLocation(l)) {
+                    result.complete(l);
+                    return;
+                }
+                // To cover slabs, stairs and other half blocks, try one block above
+                Location lPlusOne = l.clone().add(new Vector(0, 1, 0));
+                if (isSafeLocation(lPlusOne)) {
+                    // Adjust the home location accordingly
+                    plugin.getPlayers().setHomeLocation(user, lPlusOne, number);
+                    result.complete(lPlusOne);
+                    return;
+                }
+                // Try island
+                tryIsland(result, islandLoc, user, number);
+            });
+            return result;
+        }
+        // Try island
+        tryIsland(result, islandLoc, user, number);
+        return result;
+    }
+
+    private void tryIsland(CompletableFuture<Location> result, Location islandLoc, @NonNull User user, int number) {
+        Util.getChunkAtAsync(islandLoc).thenRun(() -> {
+            World w = islandLoc.getWorld();
+            if (isSafeLocation(islandLoc)) {
+                plugin.getPlayers().setHomeLocation(user, islandLoc, number);
+                result.complete(islandLoc.clone().add(new Vector(0.5D,0,0.5D)));
+                return;
+            } else {
+                // If these island locations are not safe, then we need to get creative
+                // Try the default location
+                Location dl = islandLoc.clone().add(new Vector(0.5D, 5D, 2.5D));
+                if (isSafeLocation(dl)) {
+                    plugin.getPlayers().setHomeLocation(user, dl, number);
+                    result.complete(dl);
+                    return;
+                }
+                // Try just above the bedrock
+                dl = islandLoc.clone().add(new Vector(0.5D, 5D, 0.5D));
+                if (isSafeLocation(dl)) {
+                    plugin.getPlayers().setHomeLocation(user, dl, number);
+                    result.complete(dl);
+                    return;
+                }
+                // Try all the way up to the sky
+                for (int y = islandLoc.getBlockY(); y < w.getMaxHeight(); y++) {
+                    dl = new Location(w, islandLoc.getX() + 0.5D, y, islandLoc.getZ() + 0.5D);
+                    if (isSafeLocation(dl)) {
+                        plugin.getPlayers().setHomeLocation(user, dl, number);
+                        result.complete(dl);
+                        return;
+                    }
+                }
+            }
+            result.complete(null);
+        });
+
     }
 
     /**
@@ -634,7 +735,9 @@ public class IslandsManager {
      *
      * @param world - world to check
      * @param player - the player
+     * @deprecated as of 1.14.0. Use homeTeleportAsync instead.
      */
+    @Deprecated
     public void homeTeleport(@NonNull World world, @NonNull Player player) {
         homeTeleport(world, player, 1, false);
     }
@@ -646,7 +749,9 @@ public class IslandsManager {
      * @param world - world to check
      * @param player - the player
      * @param number - a number - home location to do to
+     * @deprecated as of 1.14.0. Use homeTeleportAsync instead.
      */
+    @Deprecated
     public void homeTeleport(@NonNull World world, @NonNull Player player, int number) {
         homeTeleport(world, player, number, false);
     }
@@ -658,10 +763,102 @@ public class IslandsManager {
      * @param world - world to check
      * @param player - the player
      * @param newIsland - true if this is a new island teleport
+     * @deprecated as of 1.14.0. Use homeTeleportAsync instead.
      */
+    @Deprecated
     public void homeTeleport(@NonNull World world, @NonNull Player player, boolean newIsland) {
         homeTeleport(world, player, 1, newIsland);
     }
+
+    /**
+     * This teleports player to their island. If not safe place can be found
+     * then the player is sent to spawn via /spawn command
+     *
+     * @param world - world to check
+     * @param player - the player
+     * @return CompletableFuture true if successful, false if not
+     * @since 1.14.0
+     */
+    public CompletableFuture<Boolean> homeTeleportAsync(@NonNull World world, @NonNull Player player) {
+        return homeTeleportAsync(world, player, 1, false);
+    }
+
+    /**
+     * Teleport player to a home location. If one cannot be found a search is done to
+     * find a safe place.
+     *
+     * @param world - world to check
+     * @param player - the player
+     * @param number - a number - home location to do to
+     * @return CompletableFuture true if successful, false if not
+     * @since 1.14.0
+     */
+    public CompletableFuture<Boolean> homeTeleportAsync(@NonNull World world, @NonNull Player player, int number) {
+        return homeTeleportAsync(world, player, number, false);
+    }
+
+    /**
+     * This teleports player to their island. If not safe place can be found
+     * then the player is sent to spawn via /spawn command
+     *
+     * @param world - world to check
+     * @param player - the player
+     * @param newIsland - true if this is a new island teleport
+     * @return CompletableFuture true if successful, false if not
+     * @since 1.14.0
+     */
+    public CompletableFuture<Boolean> homeTeleportAsync(@NonNull World world, @NonNull Player player, boolean newIsland) {
+        return homeTeleportAsync(world, player, 1, newIsland);
+    }
+
+
+    private CompletableFuture<Boolean> homeTeleportAsync(@NonNull World world, @NonNull Player player, int number, boolean newIsland) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+        User user = User.getInstance(player);
+        user.sendMessage("commands.island.go.teleport");
+        // Stop any gliding
+        player.setGliding(false);
+        // Check if the player is a passenger in a boat
+        if (player.isInsideVehicle()) {
+            Entity boat = player.getVehicle();
+            if (boat instanceof Boat) {
+                player.leaveVehicle();
+                // Remove the boat so they don't lie around everywhere
+                boat.remove();
+                player.getInventory().addItem(new ItemStack(TREE_TO_BOAT.getOrDefault(((Boat) boat).getWoodType(), Material.OAK_BOAT)));
+                player.updateInventory();
+            }
+        }
+        this.getAsyncSafeHomeLocation(world, user, number).thenAccept(home -> {
+            if (home == null) {
+                // Try to fix this teleport location and teleport the player if possible
+                new SafeSpotTeleport.Builder(plugin)
+                .entity(player)
+                .island(plugin.getIslands().getIsland(world, user))
+                .homeNumber(number)
+                .thenRun(() -> teleported(world, user, number, newIsland))
+                .buildFuture()
+                .thenAccept(result::complete);
+                return;
+            }
+            // Add home
+            if (plugin.getPlayers().getHomeLocations(world, player.getUniqueId()).isEmpty()) {
+                plugin.getPlayers().setHomeLocation(player.getUniqueId(), home);
+            }
+            PaperLib.teleportAsync(player, home).thenAccept(b -> {
+                // Only run the commands if the player is successfully teleported
+                if (Boolean.TRUE.equals(b)) {
+                    teleported(world, user, number, newIsland);
+                    result.complete(true);
+                } else {
+                    result.complete(false);
+                }
+
+            });
+        });
+        return result;
+    }
+
 
     /**
      * Teleport player to a home location. If one cannot be found a search is done to
@@ -672,8 +869,9 @@ public class IslandsManager {
      * @param number - a number - home location to do to
      * @param newIsland - true if this is a new island teleport
      */
-    public void homeTeleport(@NonNull World world, @NonNull Player player, int number, boolean newIsland) {
+    private void homeTeleport(@NonNull World world, @NonNull Player player, int number, boolean newIsland) {
         User user = User.getInstance(player);
+        user.sendMessage("commands.island.go.teleport");
         Location home = getSafeHomeLocation(world, user, number);
         // Stop any gliding
         player.setGliding(false);
@@ -694,6 +892,7 @@ public class IslandsManager {
             .entity(player)
             .island(plugin.getIslands().getIsland(world, user))
             .homeNumber(number)
+            .thenRun(() -> teleported(world, user, number, newIsland))
             .build();
             return;
         }
@@ -701,10 +900,9 @@ public class IslandsManager {
         if (plugin.getPlayers().getHomeLocations(world, player.getUniqueId()).isEmpty()) {
             plugin.getPlayers().setHomeLocation(player.getUniqueId(), home);
         }
-        user.sendMessage("commands.island.go.teleport");
         PaperLib.teleportAsync(player, home).thenAccept(b -> {
             // Only run the commands if the player is successfully teleported
-            if (b) teleported(world, user, number, newIsland);
+            if (Boolean.TRUE.equals(b)) teleported(world, user, number, newIsland);
         });
     }
 
@@ -715,16 +913,7 @@ public class IslandsManager {
         // If this is a new island, then run commands and do resets
         if (newIsland) {
             // Execute commands
-            plugin.getIWM().getOnJoinCommands(world).forEach(command -> {
-                command = command.replace("[player]", user.getName());
-                if (command.startsWith("[SUDO]")) {
-                    // Execute the command by the player
-                    user.performCommand(command.substring(6));
-                } else {
-                    // Otherwise execute as the server console
-                    plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-                }
-            });
+            Util.runCommands(user, plugin.getIWM().getOnJoinCommands(world), "join");
 
             // Remove money inventory etc.
             if (plugin.getIWM().isOnJoinResetEnderChest(world)) {
@@ -858,7 +1047,7 @@ public class IslandsManager {
         // Attempt to load islands
         for (Island island : handler.loadObjects()) {
             if (island == null) {
-                plugin.logWarning("发现无效岛屿...");
+                plugin.logWarning("Null island when loading...");
                 continue;
             }
             if (island.isDeleted()) {
@@ -897,8 +1086,8 @@ public class IslandsManager {
             }
         }
         if (!toQuarantine.isEmpty()) {
-            plugin.logError(toQuarantine.size() + " 个岛屿无法成功加载; 正在移动到回收站.");
-            plugin.logError("其中有 " + unowned + " 个岛屿无岛主, " + owned + " 个岛屿有岛主.");
+            plugin.logError(toQuarantine.size() + " islands could not be loaded successfully; moving to trash bin.");
+            plugin.logError(unowned + " are unowned, " + owned + " are owned.");
 
             toQuarantine.forEach(handler::saveObjectAsync);
             // Check if there are any islands with duplicate islands
@@ -910,15 +1099,15 @@ public class IslandsManager {
                         .filter(n -> !duplicatedUUIDRemovedSet.add(n))
                         .collect(Collectors.toSet());
                 if (!duplicated.isEmpty()) {
-                    plugin.logError("**** 发现有岛主拥有多个岛屿：" + duplicated.size());
+                    plugin.logError("**** Owners that have more than one island = " + duplicated.size());
                     for (UUID uuid : duplicated) {
                         Set<Island> set = islandCache.getIslands().stream().filter(i -> uuid.equals(i.getOwner())).collect(Collectors.toSet());
-                        plugin.logError(plugin.getPlayers().getName(uuid) + "(" + uuid.toString() + ") 有 " + set.size() + " 个岛屿:");
+                        plugin.logError(plugin.getPlayers().getName(uuid) + "(" + uuid.toString() + ") has " + set.size() + " islands:");
                         set.forEach(i -> {
-                            plugin.logError("岛屿位于 " + i.getCenter());
-                            plugin.logError("岛屿唯一 ID 为 " + i.getUniqueId());
+                            plugin.logError("Island at " + i.getCenter());
+                            plugin.logError("Island unique ID = " + i.getUniqueId());
                         });
-                        plugin.logError("你应该找到真正的岛屿并从数据库中删除假岛数据.");
+                        plugin.logError("You should find out which island is real and delete the uniqueID from the database for the bogus one.");
                         plugin.logError("");
                     }
                 }
@@ -1019,7 +1208,7 @@ public class IslandsManager {
         .filter(p -> island.onIsland(p.getLocation())).forEach(p -> {
             // Teleport island players to their island home
             if (!island.getMemberSet().contains(p.getUniqueId()) && (hasIsland(w, p.getUniqueId()) || inTeam(w, p.getUniqueId()))) {
-                homeTeleport(w, p);
+                homeTeleportAsync(w, p);
             } else {
                 // Move player to spawn
                 if (spawn.containsKey(w)) {
@@ -1039,7 +1228,7 @@ public class IslandsManager {
             try {
                 handler.saveObjectAsync(island);
             } catch (Exception e) {
-                plugin.logError("无法保存岛屿信息到数据库! " + e.getMessage());
+                plugin.logError("Could not save island to database when running sync! " + e.getMessage());
             }
         }
     }
@@ -1143,7 +1332,8 @@ public class IslandsManager {
                 if (range != island.getProtectionRange()) {
                     user.sendMessage("commands.admin.setrange.range-updated", TextVariables.NUMBER, String.valueOf(range));
                     target.sendMessage("commands.admin.setrange.range-updated", TextVariables.NUMBER, String.valueOf(range));
-                    plugin.log("岛主变化: " + user.getName() + " 的岛屿保护范围根据其所拥有的权限从 " + island.getProtectionRange() + " 变为了 " + range + ".");
+                    plugin.log("Setowner: Island protection range changed from " + island.getProtectionRange() + " to "
+                            + range + " for " + user.getName() + " due to permission.");
 
                     // Get old range for event
                     int oldRange = island.getProtectionRange();
@@ -1275,7 +1465,7 @@ public class IslandsManager {
     public boolean switchIsland(World world, UUID target, Island island) {
         // Remove trashed island from trash
         if (!quarantineCache.containsKey(island.getOwner()) || !quarantineCache.get(island.getOwner()).remove(island)) {
-            plugin.logError("无法从回收站中删除岛屿");
+            plugin.logError("Could not remove island from trash");
             return false;
         }
         // Remove old island from cache if it exists
@@ -1290,19 +1480,19 @@ public class IslandsManager {
             quarantineCache.computeIfAbsent(target, k -> new ArrayList<>()).add(oldIsland);
             // Save old island
             handler.saveObjectAsync(oldIsland).thenAccept(result -> {
-                if (!result)  plugin.logError("无法保存回收站岛屿信息到数据库");
+                if (Boolean.FALSE.equals(result))  plugin.logError("Could not save trashed island in database");
             });
         }
         // Restore island from trash
         island.setDoNotLoad(false);
         // Add new island to cache
         if (!islandCache.addIsland(island)) {
-            plugin.logError("无法添加已恢复岛屿至缓存");
+            plugin.logError("Could not add recovered island to cache");
             return false;
         }
         // Save new island
         handler.saveObjectAsync(island).thenAccept(result -> {
-            if (!result)  plugin.logError("无法保存已恢复岛屿信息到数据库");
+            if (Boolean.FALSE.equals(result))  plugin.logError("Could not save recovered island to database");
         });
         return true;
     }

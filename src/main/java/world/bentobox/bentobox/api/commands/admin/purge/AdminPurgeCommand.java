@@ -130,9 +130,9 @@ public class AdminPurgeCommand extends CompositeCommand implements Listener {
         .filter(i -> ((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) > days)
         .forEach(i -> {
             Date date = new Date(Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed());
-            BentoBox.getInstance().log("将清除 " +
+            BentoBox.getInstance().log("Will purge " +
                     BentoBox.getInstance().getPlayers().getName(i.getOwner()) +
-                    " 最后登录于 " + (int)((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) + " 天前的岛屿. " + date);
+                    " last logged in " + (int)((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) + " days ago. " + date);
         });
         return getPlugin().getIslands().getIslands().stream()
                 .filter(i -> !i.isSpawn())

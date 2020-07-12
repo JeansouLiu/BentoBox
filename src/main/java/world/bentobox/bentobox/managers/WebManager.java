@@ -65,15 +65,15 @@ public class WebManager {
     public void requestGitHubData() {
         getGitHub().ifPresent(gh -> {
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("正在从 GitHub 下载数据...");
-                plugin.log("更新目录中...");
+                plugin.log("从 GitHub 下载数据中...");
+                plugin.log("更新扩展列表中...");
             }
             GitHubRepository weblinkRepo;
             try {
                 weblinkRepo = new GitHubRepository(gh, "BentoBoxWorld/weblink");
             } catch (Exception e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.logError("连接到 GitHub 时发生未知错误...");
+                    plugin.logError("连接到 GitHub 时出错..");
                     plugin.logStacktrace(e);
                 }
                 weblinkRepo = null;
@@ -90,41 +90,35 @@ public class WebManager {
             }
 
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("更新贡献者信息中...");
+                plugin.log("更新作者信息中...");
             }
 
             List<String> repositories = new ArrayList<>();
-            // Gather all the repositories of installed addons and or catalog entries.
+            // Gather all the repositories of installed addons.
             repositories.add("BentoBoxWorld/BentoBox");
             repositories.addAll(plugin.getAddonsManager().getEnabledAddons()
                     .stream().map(addon -> addon.getDescription().getRepository())
                     .filter(repo -> !repo.isEmpty())
                     .collect(Collectors.toList()));
-            repositories.addAll(addonsCatalog.stream().map(CatalogEntry::getRepository)
-                    .filter(repo -> !repositories.contains(repo))
-                    .collect(Collectors.toList()));
-            repositories.addAll(gamemodesCatalog.stream().map(CatalogEntry::getRepository)
-                    .filter(repo -> !repositories.contains(repo))
-                    .collect(Collectors.toList()));
 
             /* Download the contributors */
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("正在为: " + String.join(", ", repositories) + " 收集贡献者信息");
+                plugin.log("正在为: " + String.join(", ", repositories) + " 生成作者信息");
             }
 
             for (String repository : repositories) {
-                GitHubRepository addonRepo;
+                GitHubRepository repo;
                 try {
-                    addonRepo = new GitHubRepository(gh, repository);
+                    repo = new GitHubRepository(gh, repository);
                 } catch (Exception e) {
                     if (plugin.getSettings().isLogGithubDownloadData()) {
-                        plugin.logError("为仓库 '" + repository + "' 收集贡献者信息时出错...");
+                        plugin.logError("An unhandled exception occurred when gathering contributors data from the '" + repository + "' repository...");
                         plugin.logStacktrace(e);
                     }
-                    addonRepo = null;
+                    repo = null;
                 }
-                if (addonRepo != null) {
-                    gatherContributors(addonRepo);
+                if (repo != null) {
+                    gatherContributors(repo);
                 }
             }
 
@@ -148,7 +142,7 @@ public class WebManager {
                 }));
             } catch (JsonParseException e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.log("无法更新目录标签: JSON 数据格式有误.");
+                    plugin.log("Could not update the Catalog Tags: the gathered JSON data is malformed.");
                 }
             }
         }
@@ -165,7 +159,7 @@ public class WebManager {
                 }));
             } catch (JsonParseException e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.log("无法更新目录主题: JSON 数据格式有误.");
+                    plugin.log("Could not update the Catalog Topics: the gathered JSON data is malformed.");
                 }
             }
         }
@@ -182,7 +176,7 @@ public class WebManager {
                 catalog.getAsJsonArray("addons").forEach(addon -> addonsCatalog.add(new CatalogEntry(addon.getAsJsonObject())));
             } catch (JsonParseException e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.log("无法更新目录内容: JSON 数据格式有误.");
+                    plugin.log("Could not update the Catalog content: the gathered JSON data is malformed.");
                 }
             }
         }
@@ -204,7 +198,7 @@ public class WebManager {
             // Fail silently
         } catch (Exception e) {
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.logError("从 GitHub 下载 '" + fileName + "' 时出错...");
+                plugin.logError("An unhandled exception occurred when downloading '" + fileName + "' from GitHub...");
                 plugin.logStacktrace(e);
             }
         }

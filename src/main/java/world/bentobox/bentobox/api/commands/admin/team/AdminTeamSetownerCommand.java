@@ -46,6 +46,7 @@ public class AdminTeamSetownerCommand extends CompositeCommand {
             user.sendMessage("general.errors.not-in-team");
             return false;
         }
+
         UUID previousOwnerUUID = getIslands().getOwner(getWorld(), targetUUID);
         if (targetUUID.equals(previousOwnerUUID)) {
             user.sendMessage("commands.admin.team.setowner.already-owner", TextVariables.NAME, args.get(0));
@@ -65,6 +66,7 @@ public class AdminTeamSetownerCommand extends CompositeCommand {
         .involvedPlayer(targetUUID)
         .admin(true)
         .build();
+
         // Call the rank change event for the new island owner
         // We need to call it BEFORE the actual change, in order to retain the player's previous rank.
         IslandEvent.builder()

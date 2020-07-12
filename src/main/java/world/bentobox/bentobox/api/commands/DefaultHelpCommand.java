@@ -18,9 +18,9 @@ import world.bentobox.bentobox.api.user.User;
 public class DefaultHelpCommand extends CompositeCommand {
 
     protected static final int MAX_DEPTH = 2;
-    protected static final String USAGE_PLACEHOLDER = "[用法]";
-    protected static final String PARAMS_PLACEHOLDER = "[参数]";
-    protected static final String DESC_PLACEHOLDER = "[描述]";
+    protected static final String USAGE_PLACEHOLDER = "[usage]";
+    protected static final String PARAMS_PLACEHOLDER = "[parameters]";
+    protected static final String DESC_PLACEHOLDER = "[description]";
     protected static final String HELP_SYNTAX_REF = "commands.help.syntax";
     protected static final String HELP_SYNTAX_NO_PARAMETERS_REF = "commands.help.syntax-no-parameters";
     protected static final String HELP = "help";

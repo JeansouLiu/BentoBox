@@ -14,7 +14,7 @@ import world.bentobox.bentobox.api.user.User;
  */
 public class VaultHook extends Hook {
 
-    private static final String AMOUNT_MUST_BE_POSITIVE = "Amount must be positive.";
+    private static final String AMOUNT_MUST_BE_POSITIVE = "金额必须为正数.";
     private Economy economy;
 
     public VaultHook() {

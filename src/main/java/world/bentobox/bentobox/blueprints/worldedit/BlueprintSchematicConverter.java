@@ -19,7 +19,7 @@ public class BlueprintSchematicConverter {
 
     public BlueprintSchematicConverter(File blueprintFile) {
         if(!BentoBox.getInstance().getHooks().getHook("WorldEdit").isPresent()) {
-            BentoBox.getInstance().logError("WorldEdit 未安装!");
+            BentoBox.getInstance().logError("WorldEdit 未安装 !");
             return;
         }
         this.blueprintFile = blueprintFile;
@@ -30,7 +30,7 @@ public class BlueprintSchematicConverter {
         try {
             clipboard = ClipboardFormats.findByFile(blueprintFile).getReader(new FileInputStream(blueprintFile)).read();
         } catch (IOException e) {
-            BentoBox.getInstance().logWarning("转换蓝图至 schematic 时出错.");
+            BentoBox.getInstance().logWarning("Error while trying to convert blueprint format to schematic format.");
             BentoBox.getInstance().logStacktrace(e);
         }
         return clipboard;

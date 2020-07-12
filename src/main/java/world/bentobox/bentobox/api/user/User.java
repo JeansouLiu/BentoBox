@@ -322,7 +322,7 @@ public class User {
                 String[] spl = permission.split(permPrefix);
                 if (spl.length > 1) {
                     if (!NumberUtils.isNumber(spl[1])) {
-                        plugin.logError("玩家 " + player.getName() + " 所拥有的权限为: '" + permission + "' <-- 该权限最后必须为数字! 将使用默认值替代...");
+                        plugin.logError("Player " + player.getName() + " has permission: '" + permission + "' <-- the last part MUST be a number! Ignoring...");
                     } else {
                         int v = Integer.parseInt(spl[1]);
                         if (v < 0) {
@@ -565,7 +565,7 @@ public class User {
     public void spawnParticle(Particle particle, Particle.DustOptions dustOptions, double x, double y, double z) {
         if (particle.equals(Particle.REDSTONE) && dustOptions == null) {
             // Security check that will avoid later unexpected exceptions.
-            throw new IllegalArgumentException("必须提供一个非 null 的 Particle.DustOptions 来使用 Particle.REDSTONE 粒子效果.");
+            throw new IllegalArgumentException("A non-null Particle.DustOptions must be provided when using Particle.REDSTONE as particle.");
         }
 
         // Check if this particle is beyond the viewing distance of the server

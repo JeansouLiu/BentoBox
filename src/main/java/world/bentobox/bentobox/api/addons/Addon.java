@@ -188,7 +188,7 @@ public abstract class Addon {
                 yamlConfig = new YamlConfiguration();
                 yamlConfig.load(yamlFile);
             } catch (Exception e) {
-                Bukkit.getLogger().severe(() -> "Could not load config.yml: " + e.getMessage());
+                Bukkit.getLogger().severe(() -> "读取配置文件失败: " + e.getMessage());
             }
         }
         return yamlConfig;
@@ -210,7 +210,7 @@ public abstract class Addon {
         try {
             getConfig().save(new File(dataFolder, ADDON_CONFIG_FILENAME));
         } catch (IOException e) {
-            Bukkit.getLogger().severe("Could not save config! " + this.getDescription().getName() + " " + e.getMessage());
+            Bukkit.getLogger().severe("无法保存配置! " + this.getDescription().getName() + " " + e.getMessage());
         }
     }
 
@@ -260,7 +260,7 @@ public abstract class Addon {
      */
     public File saveResource(String jarResource, File destinationFolder, boolean replace, boolean noPath) {
         if (jarResource == null || jarResource.equals("")) {
-            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
+            throw new IllegalArgumentException("ResourcePath 不可为 null 或空");
         }
 
         jarResource = jarResource.replace('\\', '/');
@@ -270,7 +270,7 @@ public abstract class Addon {
                 try (InputStream in = jar.getInputStream(jarConfig)) {
                     if (in == null) {
                         throw new IllegalArgumentException(
-                                "The embedded resource '" + jarResource + "' cannot be found in " + jar.getName());
+                                "内置资源 '" + jarResource + "' 无法在 " + jar.getName() + " 中找到");
                     }
                     // There are two options, use the path of the resource or not
                     File outFile = new File(destinationFolder, jarResource);
@@ -287,11 +287,11 @@ public abstract class Addon {
             } else {
                 // No file in the jar
                 throw new IllegalArgumentException(
-                        "The embedded resource '" + jarResource + "' cannot be found in " + jar.getName());
+                        "内置资源 '" + jarResource + "' 无法在 " + jar.getName() + " 中找到");
             }
         } catch (IOException e) {
             BentoBox.getInstance().logError(
-                    "Could not save from jar file. From " + jarResource + " to " + destinationFolder.getAbsolutePath());
+                    "无法从 jar 中提取文件. 从 " + jarResource + " 到 " + destinationFolder.getAbsolutePath());
         }
         return null;
     }
@@ -305,7 +305,7 @@ public abstract class Addon {
      */
     public YamlConfiguration getYamlFromJar(String jarResource) throws IOException, InvalidConfigurationException {
         if (jarResource == null || jarResource.equals("")) {
-            throw new IllegalArgumentException("jarResource cannot be null or empty");
+            throw new IllegalArgumentException("jarResource 不可为 null 或空");
         }
         YamlConfiguration result = new YamlConfiguration();
         jarResource = jarResource.replace('\\', '/');
@@ -327,7 +327,7 @@ public abstract class Addon {
      */
     public InputStream getResource(String jarResource) {
         if (jarResource == null || jarResource.equals("")) {
-            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
+            throw new IllegalArgumentException("ResourcePath 不可为 null 或空");
         }
 
         jarResource = jarResource.replace('\\', '/');
@@ -339,7 +339,7 @@ public abstract class Addon {
                 }
             }
         } catch (IOException e) {
-            Bukkit.getLogger().severe("Could not open from jar file. " + jarResource);
+            Bukkit.getLogger().severe("无法从 jar 中打开文件. " + jarResource);
         }
         return null;
     }

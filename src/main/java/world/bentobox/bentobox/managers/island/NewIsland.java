@@ -99,7 +99,7 @@ public class NewIsland {
          */
         public Builder reason(Reason reason) {
             if (!reason.equals(Reason.CREATE) && !reason.equals(Reason.RESET)) {
-                throw new IllegalArgumentException("只能是 CREATE 或 RESET.");
+                throw new IllegalArgumentException("Reason must be CREATE or RESET.");
             }
             this.reason2 = reason;
             return this;
@@ -149,7 +149,7 @@ public class NewIsland {
                 NewIsland newIsland = new NewIsland(this);
                 return newIsland.getIsland();
             }
-            throw new IOException("参数不足. 必须指定一个玩家!");
+            throw new IOException("Insufficient parameters. Must have a user!");
         }
     }
 
@@ -169,21 +169,21 @@ public class NewIsland {
                 island.setReserved(false);
             } else {
                 // This should never happen unless we allow another way to paste over islands without reserving
-                plugin.logError("玩家 " + user.getName() + " 的新岛屿未保存!");
+                plugin.logError("New island for user " + user.getName() + " was not reserved!");
             }
         }
         // If the reservation fails, then we need to make a new island anyway
         if (next == null) {
             next = this.locationStrategy.getNextLocation(world);
             if (next == null) {
-                plugin.logError("创建岛屿失败 - 空间不足.");
-                plugin.logError("如果世界是导入的, 多尝试几次直至所有未领取的岛屿都被领取.");
+                plugin.logError("Failed to make island - no unoccupied spot found.");
+                plugin.logError("If the world was imported, try multiple times until all unowned islands are known.");
                 throw new IOException("commands.island.create.cannot-create-island");
             }
             // Add to the grid
             island = plugin.getIslands().createIsland(next, user.getUniqueId());
             if (island == null) {
-                plugin.logError("创建岛屿失败! 无法在坐标格中加入岛屿.");
+                plugin.logError("Failed to make island! Island could not be added to the grid.");
                 throw new IOException("commands.island.create.unable-create-island");
             }
         }
@@ -236,7 +236,8 @@ public class NewIsland {
                     user.getPlayer().setVelocity(new Vector(0, 0, 0));
                     user.getPlayer().setFallDistance(0F);
                     // Teleport player after this island is built
-                    plugin.getIslands().homeTeleport(world, user.getPlayer(), true);
+                    plugin.getIslands().homeTeleportAsync(world, user.getPlayer(), true).thenRun(() -> tidyUp(oldIsland));
+                    return;
                 } else {
                     // let's send him a message so that he knows he can teleport to his island!
                     user.sendMessage("commands.island.create.you-can-teleport-to-your-island");
@@ -245,31 +246,7 @@ public class NewIsland {
                 // Remove the player again to completely clear the data
                 User.removePlayer(user.getPlayer());
             }
-            // Delete old island
-            if (oldIsland != null && !plugin.getSettings().isKeepPreviousIslandOnReset()) {
-                // Delete the old island
-                plugin.getIslands().deleteIsland(oldIsland, true, user.getUniqueId());
-            }
-
-            // Fire exit event
-            Reason reasonDone = Reason.CREATED;
-            switch (reason) {
-            case CREATE:
-                reasonDone = Reason.CREATED;
-                break;
-            case RESET:
-                reasonDone = Reason.RESETTED;
-                break;
-            default:
-                break;
-            }
-            IslandEvent.builder()
-            .involvedPlayer(user.getUniqueId())
-            .reason(reasonDone)
-            .island(island)
-            .location(island.getCenter())
-            .oldIsland(oldIsland)
-            .build();
+            tidyUp(oldIsland);
         };
         if (noPaste) {
             Bukkit.getScheduler().runTask(plugin, task);
@@ -282,5 +259,34 @@ public class NewIsland {
         plugin.getMetrics().ifPresent(BStats::increaseIslandsCreatedCount);
         // Save island
         plugin.getIslands().save(island);
+    }
+
+    private void tidyUp(Island oldIsland) {
+        // Delete old island
+        if (oldIsland != null && !plugin.getSettings().isKeepPreviousIslandOnReset()) {
+            // Delete the old island
+            plugin.getIslands().deleteIsland(oldIsland, true, user.getUniqueId());
+        }
+
+        // Fire exit event
+        Reason reasonDone = Reason.CREATED;
+        switch (reason) {
+        case CREATE:
+            reasonDone = Reason.CREATED;
+            break;
+        case RESET:
+            reasonDone = Reason.RESETTED;
+            break;
+        default:
+            break;
+        }
+        IslandEvent.builder()
+        .involvedPlayer(user.getUniqueId())
+        .reason(reasonDone)
+        .island(island)
+        .location(island.getCenter())
+        .oldIsland(oldIsland)
+        .build();
+
     }
 }

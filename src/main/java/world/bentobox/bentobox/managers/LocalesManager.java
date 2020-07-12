@@ -175,8 +175,10 @@ public class LocalesManager {
             jarLocale.getKeys(true).stream().filter(k -> !fileLocale.contains(k, false)).forEach(k -> fileLocale.set(k, jarLocale.get(k)));
             // Save file
             fileLocale.save(fileLocaleFile);
+        } catch (InvalidConfigurationException e) {
+            plugin.logError("Could not update locale file '" + lf + "' due to it being malformed: " + e.getMessage());
         } catch (Exception e) {
-            plugin.logError("更新语言文件: " + lf + " 时出错: " + e.getMessage());
+            plugin.logError("Error updating locale file '" + lf + "': " + e.getMessage());
             plugin.logStacktrace(e);
         }
     }
@@ -199,7 +201,7 @@ public class LocalesManager {
                 // We cannot use Bukkit's saveResource, because we want it to go into a specific folder, so...
                 // Get the last part of the name
                 int lastIndex = name.lastIndexOf('/');
-                File targetFile = new File(localeDir, name.substring(lastIndex >= 0 ? lastIndex : 0));
+                File targetFile = new File(localeDir, name.substring(Math.max(lastIndex, 0)));
                 copyFile(name, targetFile);
                 // Update the locale file if it exists already
                 try (InputStreamReader in = new InputStreamReader(plugin.getResource(name))) {
@@ -216,12 +218,12 @@ public class LocalesManager {
                     // Save it
                     fileLocale.save(targetFile);
                 } catch (InvalidConfigurationException e) {
-                    plugin.logError("无法从 jar 中更新语言文件 " + e.getMessage());
+                    plugin.logError("Could not update locale files from jar " + e.getMessage());
                 }
 
             }
         } catch (IOException e) {
-            plugin.logError("无法从 jar 中复制语言文件 " + e.getMessage());
+            plugin.logError("Could not copy locale files from jar " + e.getMessage());
         }
     }
 
@@ -255,9 +257,9 @@ public class LocalesManager {
                     languages.put(localeObject, new BentoBoxLocale(localeObject, languageYaml));
                 }
             } catch (Exception e) {
-                plugin.logError("无法加载语言 '" + language.getName() + "' : " + e.getMessage()
-                + " 原因 '" + e.getCause() + "'." +
-                        " 该文件可能包含无效的 YML 格式，或者插件没有读写权限.");
+                plugin.logError("Could not load '" + language.getName() + "' : " + e.getMessage()
+                + " with the following cause '" + e.getCause() + "'." +
+                        " The file has likely an invalid YML format or has been made unreadable during the process.");
             }
         }
     }
@@ -268,7 +270,7 @@ public class LocalesManager {
                 java.nio.file.Files.copy(initialStream, targetFile.toPath());
             }
         } catch (IOException e) {
-            plugin.logError("无法从 jar 中复制语言文件 " + e.getMessage());
+            plugin.logError("Could not copy locale files from jar " + e.getMessage());
         }
     }
 
@@ -292,6 +294,16 @@ public class LocalesManager {
         } else {
             return new ArrayList<>(languages.keySet());
         }
+    }
+
+    /**
+     * Returns {@code true} if this locale is available, {@code false} otherwise.
+     * @param locale the locale, not null. Consider using {@link Locale#forLanguageTag(String)} if needed.
+     * @return {@code true} if this locale is available, {@code false} otherwise.
+     * @since 1.14.0
+     */
+    public boolean isLocaleAvailable(@NonNull Locale locale) {
+        return languages.containsKey(locale);
     }
 
     /**
@@ -328,25 +340,25 @@ public class LocalesManager {
         User user = User.getInstance(Bukkit.getConsoleSender());
 
         user.sendRawMessage(ChatColor.AQUA + SPACER);
-        plugin.log(ChatColor.AQUA + "分析 BentoBox 语言文件中");
+        plugin.log(ChatColor.AQUA + "Analyzing BentoBox locale files");
         user.sendRawMessage(ChatColor.AQUA + SPACER);
         loadLocalesFromFile(BENTOBOX);
         if (languages.containsKey(Locale.US)) {
             analyze(user);
         } else {
-            user.sendRawMessage(ChatColor.RED + "未找到 美式英语 语言，无法进行分析!");
+            user.sendRawMessage(ChatColor.RED + "No US English in BentoBox to use for analysis!");
         }
-        user.sendRawMessage(ChatColor.AQUA + "分析扩展语言文件中");
+        user.sendRawMessage(ChatColor.AQUA + "Analyzing Addon locale files");
         plugin.getAddonsManager().getAddons().forEach(addon -> {
             user.sendRawMessage(ChatColor.AQUA + SPACER);
-            user.sendRawMessage(ChatColor.AQUA + "正在分析扩展 " + addon.getDescription().getName());
+            user.sendRawMessage(ChatColor.AQUA + "Analyzing addon " + addon.getDescription().getName());
             user.sendRawMessage(ChatColor.AQUA + SPACER);
             languages.clear();
             loadLocalesFromFile(addon.getDescription().getName());
             if (languages.containsKey(Locale.US)) {
                 analyze(user);
             } else {
-                user.sendRawMessage(ChatColor.RED + "未找到 美式英语 语言，无法进行分析!");
+                user.sendRawMessage(ChatColor.RED + "No US English to use for analysis!");
             }
         });
         reloadLanguages();
@@ -358,7 +370,7 @@ public class LocalesManager {
      * @since 1.5.0
      */
     private void analyze(User user) {
-        user.sendRawMessage(ChatColor.GREEN + "支持以下语言:");
+        user.sendRawMessage(ChatColor.GREEN + "The following locales are supported:");
         languages.forEach((k,v) -> user.sendRawMessage(ChatColor.GOLD + k.toLanguageTag() + " " + k.getDisplayLanguage() + " " + k.getDisplayCountry()));
         // Start with US English
         YamlConfiguration usConfig = languages.get(Locale.US).getConfig();
@@ -366,7 +378,7 @@ public class LocalesManager {
         YamlConfiguration fixConfig = new YamlConfiguration();
         languages.values().stream().filter(l -> !l.toLanguageTag().equals(Locale.US.toLanguageTag())).forEach(l -> {
             user.sendRawMessage(ChatColor.GREEN + SPACER);
-            user.sendRawMessage(ChatColor.GREEN + "正在分析语言文件 " + l.toLanguageTag() + ":");
+            user.sendRawMessage(ChatColor.GREEN + "Analyzing locale file " + l.toLanguageTag() + ":");
             YamlConfiguration c = l.getConfig();
             boolean complete = true;
             for (String path : usConfig.getKeys(true)) {
@@ -376,9 +388,9 @@ public class LocalesManager {
                 }
             }
             if (complete) {
-                user.sendRawMessage(ChatColor.GREEN + "语言翻译完整.");
+                user.sendRawMessage(ChatColor.GREEN + "Language file covers all strings.");
             } else {
-                user.sendRawMessage(ChatColor.RED + "以下 YAML 项缺失. 请翻译:");
+                user.sendRawMessage(ChatColor.RED + "The following YAML is missing. Please translate it:");
                 plugin.log("\n" + fixConfig.saveToString());
             }
 

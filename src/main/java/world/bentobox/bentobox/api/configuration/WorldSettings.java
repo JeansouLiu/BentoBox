@@ -316,7 +316,7 @@ public interface WorldSettings extends ConfigObject {
      */
     @NonNull
     List<String> getOnLeaveCommands();
-
+    
     /**
      * Returns a list of commands that should be executed when the player respawns after death if {@link Flags#ISLAND_RESPAWN} is true.<br/>
      * @return a list of commands.

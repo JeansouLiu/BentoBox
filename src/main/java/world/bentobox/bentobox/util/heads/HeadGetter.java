@@ -16,8 +16,9 @@ import world.bentobox.bentobox.BentoBox;
 import world.bentobox.bentobox.api.panels.PanelItem;
 
 public class HeadGetter {
-    private static Map<String,ItemStack> cachedHeads = new HashMap<>();
+    private static Map<String,HeadCache> cachedHeads = new HashMap<>();
     private static final Map<String, PanelItem> names = new HashMap<>();
+    private static final long TOO_LONG = 360000; // 3 minutes
     private BentoBox plugin;
     private static Map<String,Set<HeadRequester>> headRequesters = new HashMap<>();
 
@@ -42,7 +43,7 @@ public class HeadGetter {
                     meta.setOwner(en.getKey());
                     playerSkull.setItemMeta(meta);
                     // Save in cache
-                    cachedHeads.put(en.getKey(), playerSkull);
+                    cachedHeads.put(en.getKey(), new HeadCache(playerSkull, System.currentTimeMillis()));
                     // Tell requesters the head came in
                     if (headRequesters.containsKey(en.getKey())) {
                         for (HeadRequester req : headRequesters.get(en.getKey())) {
@@ -61,16 +62,15 @@ public class HeadGetter {
      * @param requester - callback class
      */
     public static void getHead(PanelItem panelItem, HeadRequester requester) {
+        // Freshen cache
+        cachedHeads.values().removeIf(c -> System.currentTimeMillis() - c.getTimestamp() > TOO_LONG);
         // Check if in cache
         if (cachedHeads.containsKey(panelItem.getPlayerHeadName())) {
-            panelItem.setHead(cachedHeads.get(panelItem.getPlayerHeadName()).clone());
+            panelItem.setHead(cachedHeads.get(panelItem.getPlayerHeadName()).getHead().clone());
             requester.setHead(panelItem);
         } else {
             // Get the name
-            headRequesters.putIfAbsent(panelItem.getPlayerHeadName(), new HashSet<>());
-            Set<HeadRequester> requesters = headRequesters.get(panelItem.getPlayerHeadName());
-            requesters.add(requester);
-            headRequesters.put(panelItem.getPlayerHeadName(), requesters);
+            headRequesters.computeIfAbsent(panelItem.getPlayerHeadName(), k -> new HashSet<>()).add(requester);
             names.put(panelItem.getPlayerHeadName(), panelItem);
         }
     }

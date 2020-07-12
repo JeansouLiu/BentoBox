@@ -1,4 +1,4 @@
-# BentoBox v1.13.1 配置文件.
+# BentoBox v1.14.0 配置文件.
 # 在此配置文件注释中，addon 翻译为扩展，plugin 翻译为插件
 # 
 # 你可以在这里设置以下项:
@@ -66,8 +66,13 @@ general:
     # 数据表前缀. 若使用文件存储方式请无视此项.
     # 仅允许 A-Z, a-z, 0-9. 其它字符将被替换为下划线(_).
     # 如果你的多个 BentoBox 服务器使用同一个数据库，请务必设置此项.
+    # 请注意长度 - 一般不超过63字节.
     # Added since 1.13.0.
     prefix-character: ''
+    # MongoDB 客户端连接 URI.
+    # 详见: https://docs.mongodb.com/manual/reference/connection-string/
+    # Added since 1.14.0.
+    mongodb-connection-uri: ''
   # 允许 FTB(https://www.feed-the-beast.com/ 一个 MOD) 模组的自激活仪器(Autonomous Activator)工作 (将会允许虚拟玩家 [CoFH] 放置和破坏方块并拾取物品)
   # 如果需要的话，在这里添加更多虚拟玩家的名字
   # /!\ 此功能仍处于测试阶段，可能不会正常工作.
@@ -76,6 +81,9 @@ general:
 panel:
   # 当玩家点击菜单之外的区域时关闭菜单
   close-on-click-outside: true
+  # 菜单空白区域填充的物品.
+  # Added since 1.14.0.
+  filler-material: LIGHT_BLUE_STAINED_GLASS_PANE
 logs:
   # 是否在服务器日志中记录超平坦区块的重新生成.
   # 如果超平坦区块很多的话，它会霸占你的控制台.

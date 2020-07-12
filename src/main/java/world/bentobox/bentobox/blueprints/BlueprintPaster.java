@@ -266,9 +266,9 @@ public class BlueprintPaster {
             }
         } catch (IllegalArgumentException e) {
             // This may happen if the block type is no longer supported by the server
-            plugin.logWarning("蓝图文件中含有更新版本 Minecraft 的物品.");
-            plugin.logWarning("请手动加载蓝图文件, 移除不支持的物品.");
-            plugin.logWarning("世界: " + world.getName() + "; 无效方块数据: " + block.getBlockData());
+            plugin.logWarning("蓝图文件包含此服务器不支持的物品.");
+            plugin.logWarning("请自行加载蓝图, 移除该物品以修复此问题.");
+            plugin.logWarning("世界: " + world.getName() + "; 无效物品数据: " + block.getBlockData());
         }
         return blockData;
     }

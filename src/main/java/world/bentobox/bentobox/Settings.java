@@ -102,11 +102,11 @@ public class Settings implements ConfigObject {
     @ConfigComment("数据表前缀. 若使用文件存储方式请无视此项.")
     @ConfigComment("仅允许 A-Z, a-z, 0-9. 其它字符将被替换为下划线(_).")
     @ConfigComment("如果你的多个 BentoBox 服务器使用同一个数据库，请务必设置此项.")
-    @ConfigComment("请注意长度 - 一般不超过63字节")
+    @ConfigComment("请注意长度 - 一般不超过63字节.")
     @ConfigEntry(path = "general.database.prefix-character", since = "1.13.0")
     private String databasePrefix = "";
 
-    @ConfigComment("MongoDB 客户端连接 URI")
+    @ConfigComment("MongoDB 客户端连接 URI.")
     @ConfigComment("详见: https://docs.mongodb.com/manual/reference/connection-string/")
     @ConfigEntry(path = "general.database.mongodb-connection-uri", since = "1.14.0")
     private String mongodbConnectionUri = "";

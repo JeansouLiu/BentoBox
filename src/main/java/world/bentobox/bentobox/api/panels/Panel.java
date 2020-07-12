@@ -57,8 +57,8 @@ public class Panel implements HeadRequester, InventoryHolder {
     }
 
     protected void makePanel(String name, Map<Integer, PanelItem> items, int size, User user,
-        PanelListener listener) {
-            this.makePanel(name, items, size, user, listener, Type.INVENTORY);
+            PanelListener listener) {
+        this.makePanel(name, items, size, user, listener, Type.INVENTORY);
     }
 
     /**

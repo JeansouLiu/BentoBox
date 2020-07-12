@@ -42,7 +42,7 @@ public class NamePrompt extends StringPrompt {
         // Convert color codes
         input = ChatColor.translateAlternateColorCodes('&', input);
         if (ChatColor.stripColor(input).length() > 32) {
-            context.getForWhom().sendRawMessage("你输这么长，也不问我同不同意，所以我就给你吞了o(*￣▽￣*)o");
+            context.getForWhom().sendRawMessage("Too long");
             return this;
         }
         // Make a uniqueid

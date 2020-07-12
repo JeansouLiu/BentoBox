@@ -25,13 +25,13 @@ class IslandGrid {
             TreeMap<Integer, Island> zEntry = grid.get(island.getMinX());
             if (zEntry.containsKey(island.getMinZ())) {
                 // There is an overlap or duplicate
-                plugin.logError("无法加载岛屿. 岛屿位置重叠: " + island.getUniqueId());
-                plugin.logError("位置: " + island.getCenter());
+                plugin.logError("Cannot load island. Overlapping: " + island.getUniqueId());
+                plugin.logError("Location: " + island.getCenter());
                 // Get the previously loaded island
                 Island firstLoaded = zEntry.get(island.getMinZ());
                 if (firstLoaded.getOwner() == null && island.getOwner() != null) {
                     // This looks fishy. We prefer to load islands that have an owner. Swap the two
-                    plugin.logError("重复的岛屿中有一个有岛主, 所以加载有岛主的岛屿. " + island.getOwner());
+                    plugin.logError("Duplicate island has an owner, so using that one. " + island.getOwner());
                     firstLoaded = new Island(island);
                     zEntry.put(island.getMinZ(), firstLoaded);
                 } else if (firstLoaded.getOwner() != null && island.getOwner() != null) {
@@ -39,20 +39,20 @@ class IslandGrid {
                     if (firstLoaded.getOwner().equals(island.getOwner())) {
                         // Find out which one is the original
                         if (firstLoaded.getCreatedDate() > island.getCreatedDate()) {
-                            plugin.logError("岛主重复. 将根据创建日期进行替换.");
+                            plugin.logError("Same owner duplicate. Swaping based on creation date.");
                             // FirstLoaded is the newer
                             firstLoaded = new Island(island);
                             zEntry.put(island.getMinZ(), firstLoaded);
                         } else {
-                            plugin.logError("岛主重复.");
+                            plugin.logError("Same owner duplicate.");
                         }
                     } else {
-                        plugin.logError("岛屿重复但是有不同的岛主. 将保留最先加载的岛屿.");
-                        plugin.logError("这非常严重!");
+                        plugin.logError("Duplicate but different owner. Keeping first loaded.");
+                        plugin.logError("This is serious!");
                         plugin.logError("1st loaded ID: " + firstLoaded.getUniqueId());
-                        plugin.logError("1st loaded 岛主: " + firstLoaded.getOwner());
+                        plugin.logError("1st loaded owner: " + firstLoaded.getOwner());
                         plugin.logError("2nd loaded ID: " + island.getUniqueId());
-                        plugin.logError("2nd loaded 岛主: " + island.getOwner());
+                        plugin.logError("2nd loaded owner: " + island.getOwner());
                     }
                 }
                 return false;
