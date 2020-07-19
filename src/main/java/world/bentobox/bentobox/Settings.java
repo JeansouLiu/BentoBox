@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
+
 import world.bentobox.bentobox.api.configuration.ConfigComment;
 import world.bentobox.bentobox.api.configuration.ConfigEntry;
 import world.bentobox.bentobox.api.configuration.ConfigObject;
@@ -124,6 +125,12 @@ public class Settings implements ConfigObject {
     @ConfigComment("菜单空白区域填充的物品")
     @ConfigEntry(path = "panel.filler-material", since = "1.14.0")
     private Material panelFillerMaterial = Material.LIGHT_BLUE_STAINED_GLASS_PANE;
+
+    @ConfigComment("玩家皮肤数据最长缓存多少时间.")
+    @ConfigComment("以分钟为单位.")
+    @ConfigComment("设为 0 将仅在服务器重启时清除缓存.")
+    @ConfigEntry(path = "panel.head-cache-time", since = "1.14.1")
+    private long playerHeadCacheTime = 60;
 
     /*
      * Logs
@@ -710,4 +717,27 @@ public class Settings implements ConfigObject {
     public void setPanelFillerMaterial(Material panelFillerMaterial) {
         this.panelFillerMaterial = panelFillerMaterial;
     }
+
+
+    /**
+     * Method Settings#getPlayerHeadCacheTime returns the playerHeadCacheTime of this object.
+     *
+     * @return the playerHeadCacheTime (type long) of this object.
+     * @since 1.14.1
+     */
+    public long getPlayerHeadCacheTime()
+	{
+		return playerHeadCacheTime;
+	}
+
+
+	/**
+     * Method Settings#setPlayerHeadCacheTime sets new value for the playerHeadCacheTime of this object.
+     * @param playerHeadCacheTime new value for this object.
+     * @since 1.14.1
+     */
+    public void setPlayerHeadCacheTime(long playerHeadCacheTime)
+	{
+		this.playerHeadCacheTime = playerHeadCacheTime;
+	}
 }
