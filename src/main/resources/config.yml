@@ -1,4 +1,4 @@
-# BentoBox v1.14.0 配置文件.
+# BentoBox v1.14.1 配置文件.
 # 在此配置文件注释中，addon 翻译为扩展，plugin 翻译为插件
 # 
 # 你可以在这里设置以下项:
@@ -84,6 +84,11 @@ panel:
   # 菜单空白区域填充的物品.
   # Added since 1.14.0.
   filler-material: LIGHT_BLUE_STAINED_GLASS_PANE
+  # 皮肤数据的缓存时间.
+  # 以分钟为单位.
+  # 设为 0 将仅在服务器重启时清除缓存.
+  # Added since 1.14.1.
+  head-cache-time: 60
 logs:
   # 是否在服务器日志中记录超平坦区块的重新生成.
   # 如果超平坦区块很多的话，它会霸占你的控制台.
