@@ -2,119 +2,138 @@ catalog:
   panel:
     icon:
       already-installed: 已安装！
-      install-now: 现在安装！
-      description-template: '&8[topic] &a[install] &7&o[description] &e点击以&a获取&a最新更新的链接。'
+      install-now: 点击安装！
+      description-template: |+
+        &8 [topic]
+        &a [install]
+
+        &7 &o [description]
+
+        &e 点击打开最新版
+        &a 发布页.
     GAMEMODES:
-      title: 游戏模式编录
+      title: 游戏模式扩展列表
     ADDONS:
-      title: 扩展编录
+      title: 其它扩展列表
     views:
       gamemodes:
-        name: '&6游戏模式'
-        description: '&e点击以&a浏览可用的官方游戏模式。'
+        name: '&6游戏模式扩展列表'
+        description: '&e点击&a查看官方游戏模式扩展列表。'
       addons:
-        name: '&6扩展'
-        description: '&e点击以&a浏览可用的官方扩展。'
+        name: '&6其它扩展列表'
+        description: '&e点击&a查看官方扩展列表。'
     empty-here:
-      name: '&b这里似乎是空的……'
-      description: '&cBentoBox无法连接至GitHub。&a请在配置中允许BentoBox连接到GitHub，或稍后再试。'
+      name: '&b这里一片荒芜……'
+      description: |+
+        &c BentoBox 无法连接至 GitHub.
+
+        &a 请在配置文件中
+        &a 允许或稍后重试.
 commands:
   admin:
     blueprint:
-      copy-first: '&c请先复制一份规划方案！'
+      copy-first: '&c请先复制蓝图！'
       copy:
         parameters: '[air]'
-        description: 复制首尾位置所圈定的方块（是否包括空气方块可选）到剪切板
-      could-not-load: '&c无法加载该文件！'
+        description: 复制所选区域，在指令末尾添加 air 以复制空气
+      could-not-load: '&c加载蓝图文件失败！'
       file-exists: '&c文件已存在，是否覆盖？'
       list:
-        description: 列出可用的蓝图
-        no-blueprints: '&c蓝图文件夹中未发现蓝图！'
-        available-blueprints: '&a下列蓝图可加载使用：'
+        description: 列出可用蓝图
+        no-blueprints: '&c蓝图文件夹中无蓝图文件！'
+        available-blueprints: '&a这些蓝图可以使用：'
       load:
-        parameters: <blueprint name>
+        parameters: <name>
         description: 加载蓝图到剪切板
       management:
         description:
           success: 成功！
           quit: quit
-          instructions: 为 [name] 键入一个多行文本描述，最后请用一行 quit 来结束。
+          instructions: |
+            为 [name] 设置多行描述
+            输入 'quit' 结束编辑.
           cancelling: 正在取消
+          default-color: "&f"
         name:
           success: 成功！
           quit: quit
-          prompt: 键入名称，或输入 quit 以放弃
-          too-long: '&c名称过长'
-          pick-a-unique-name: 请选择一个更有区分度的名字
+          prompt: 输入模板名，输入 'quit' 取消
+          too-long: '&c模板名过长'
+          pick-a-unique-name: 此模板名已存在
           conversation-prefix: '>'
         perm-not-required: 不需要
         perm-required: 需要
         back: 返回
-        instruction: 点选蓝图然后点这里
-        normal: 一般
-        nether: 地狱
-        end: 末界
-        title: 蓝图包管理器
-        edit: 点击以编辑
+        instruction: 先点击下面的一个蓝图然后点击这里
+        normal: 主世界
+        nether: 下界
+        end: 末地
+        title: 模板管理中心
+        edit: 点击编辑该模板
         rename: 右击以重命名
         edit-description: 点击编辑描述
         world-name-syntax: '[name] 世界'
-        world-instructions: 将蓝图放在右面来设定
+        world-instructions: 在右边放置蓝图
         trash: 回收站
-        trash-instructions: 右击此处以删除
+        trash-instructions: 右击以清空回收站
         permission: 权限
-        perm-format: '&e'
-        remove: 右击以移除
-        blueprint-instruction: 点击选择，然后添加到包中。右击可重命名。
-        select-first: 请先选择蓝图
-        new-bundle: 新蓝图包
-        new-bundle-instructions: 点击以创建新蓝图包
-        slot: '&f偏好槽位 [number]'
-        slot-instructions: ' &a左键点击以增加 &a右键点击来减少'
+        perm-format: '&e '
+        remove: 右击删除
+        blueprint-instruction: |
+          点击选中此蓝图,
+          然后添加到模板中.
+          右键重命名.
+        select-first: 请先选择一个蓝图
+        new-bundle: 新建模板
+        new-bundle-instructions: 点击创建一个新模板
+        slot: '&f位置 [number]'
+        slot-instructions: |
+          &a 左键前移
+          &a 右键后移
       no-such-file: '&c文件不存在！'
       parameters: <load/copy/paste/pos1/pos2/save>
       save:
         parameters: <blueprint name>
-        description: 保存所复制的剪贴板
-      description: 调整蓝图
-      bedrock-required: '&c蓝图中至少要有一个基岩块！'
-      could-not-save: '&c保存文件时出现了错误：[message]'
-      set-pos1: '&a首位置设置为 [vector]'
-      set-pos2: '&a尾位置设置为 [vector]'
+        description: 保存剪切板内容
+      description: 蓝图管理
+      bedrock-required: '&c蓝图中至少要有一个基岩！'
+      could-not-save: '&cHmm, 看起来没有保存成功：[message]'
+      set-pos1: '&a已设置点 1 于 [vector]'
+      set-pos2: '&a已设置点 2 于 [vector]'
       set-different-pos: '&c请换个位置 - 这个位置已经设置过了！'
-      need-pos1-pos2: '&c请圈定首尾位置！'
+      need-pos1-pos2: '&c请先设置点 1 和 点 2！'
       copying: '&b复制方块中……'
       copied-blocks: '&b已从剪切板复制了 [number] 个方块'
-      look-at-a-block: '&c请看向 20 个方块距离以内的一个方块来设置'
-      mid-copy: '&c复制中。请等待复制结束。'
+      look-at-a-block: '&c请看向一个 20 块以内的方块来设置'
+      mid-copy: '&c复制中。请稍等。'
       copied-percent: '&6已复制 [number]%'
       origin:
-        description: 将所在位置设置为蓝图的原点
+        description: 将当前位置设置为蓝图中心点
       paste:
-        description: 将剪贴板粘贴到您所在位置
+        description: 将剪贴板内容粘贴到当前位置
         pasting: '&a正在粘贴……'
       pos1:
-        description: 设置立体剪贴板的首位置
+        description: 设置点 1
       pos2:
-        description: 设置立体剪贴板的尾位置
+        description: 设置点 2
     clearresetsall:
-      description: 清空所有玩家在这个世界的重制次数
+      description: 重置此世界所有玩家的岛屿重置次数
     clearresets:
-      cleared: '&2重置次数已清空'
-      description: 清空玩家在这个世界的重制次数
+      cleared: '&2重置次数已重置'
+      description: 重置玩家在这个世界的岛屿重置次数
       parameters: <player>
     deaths:
       reset:
         parameters: <player>
         description: 重置玩家的死亡次数
-        success: '&a已成功重设 &b[name]&a 的死亡次数到 &b0&a。'
+        success: '&a已成功重置 &b[name]&a 的死亡次数为 &b0&a。'
       set:
         parameters: <player> <deaths>
-        description: 设定玩家的死亡次数
-        success: ' &a成功设定玩家 &b[name]&a 的死亡次数到 &b[number]&a。'
+        description: 设置玩家的死亡次数
+        success: ' &a成功设置玩家 &b[name]&a 的死亡次数为 &b[number]&a。'
       description: 编辑玩家的死亡次数
     delete:
-      cannot-delete-owner: '&c删除之前必须将所有岛屿成员都踢出岛屿。'
+      cannot-delete-owner: '&c请先踢出所有岛屿成员。'
       deleted-island: '&a位于 &e[xyz] &a的岛屿已经被成功删除。'
       description: 删除玩家的岛屿
       parameters: <player>
@@ -123,7 +142,7 @@ commands:
       description: 获取玩家在他们的岛屿上的头衔
       rank-is: '&a头衔为 [rank] 于其岛屿。'
     help:
-      description: 管理员命令
+      description: 管理员指令
     info:
       banned-format: '&c[name]'
       deaths: 死亡次数：[number]
@@ -131,7 +150,7 @@ commands:
       island-coords: 岛屿边界：[xz1] 至 [xz2]
       island-location: 岛屿位置：[xyz]
       island-uuid: UUID：[uuid]
-      is-spawn: 此岛屿是初始岛
+      is-spawn: 此岛为出生点
       last-login: 最后登录：[date]
       no-island: '&c您当前不在一座岛上……'
       owner: 岛主：[owner] ([uuid])
@@ -141,7 +160,7 @@ commands:
       team-members-title: 队伍成员：
       team-owner-format: '&a[name] [rank]'
       title: ========== 岛屿信息 ============
-      unowned: '&c无人岛'
+      unowned: '&c该岛被冷落了, 没人喜欢它'
       resets-left: 重置次数： [number]（最多： [total]）
       islands-in-trash: '&d玩家有废弃的岛屿。'
       purge-protected: 岛屿受清除保护
@@ -157,19 +176,19 @@ commands:
       description: 清除废弃超过 [days] 天的岛屿
       days-or-more: 至少为 1 天或更长
       purgable-islands: 发现 [number] 个可清除的岛屿。
-      purge-in-progress: '&c清除正在进行中。使用 purge stop 命令取消操作'
+      purge-in-progress: '&c清除正在进行中。使用 /[label] purge stop 取消操作'
       number-error: '&c参数必须为数字格式的天数'
-      confirm: '&d键入 [label] purge confirm 命令来开始清除'
-      completed: '&a清除操作已停止'
-      see-console-for-status: 清除操作已开始。参看服务器控制台以获取进度信息
+      confirm: '&d执行 /[label] purge confirm 命令来开始清除'
+      completed: '&a清除操作已完成'
+      see-console-for-status: 清除操作已开始。请至服务器控制台查看进度信息
       protect:
         description: 开启或关闭岛屿清除保护
-        move-to-island: '&c请先移步至一个岛屿！'
+        move-to-island: '&c你不在一个岛屿上！'
         protecting: '&a本岛受清除保护'
         unprotecting: '&a清除保护解除中'
       unowned:
-        description: 正准备清除无主的岛屿——需要进一步确认
-        unowned-islands: '&c已发现 [number] 个岛屿'
+        description: 清除未认领的岛屿
+        unowned-islands: '&c已发现 [number] 个未认领的岛屿'
     range:
       description: 管理员 island range 命令
       display:
@@ -797,7 +816,7 @@ protection:
     FLINT_AND_STEEL:
       name: 火石和钢
       description: '&a允许玩家使用&a打火机或者火焰弹引火。'
-      hint: 不能使用打火机或者火焰弹
+      hint: 不能使用打火石或者火焰弹
     FURNACE:
       description: 切换使用
       hint: 禁止使用熔炉
@@ -1071,7 +1090,7 @@ protection:
         name: '&a基本设置'
         description: '&a显示最有用的设置。'
       expert:
-        name: '&c专家设置'
+        name: '&c专家模式'
         description: '&a显示所有可用的设置。'
       click-to-switch: '&e点击&a切换到 &r[next]&r&a.'
     WORLD_DEFAULTS:
@@ -1082,18 +1101,18 @@ protection:
   world-protected: '&c世界保护：[description]'
 ranks:
   admin: 管理员
-  banned: 被封者
+  banned: 被封禁
   member: 成员
   owner: 岛主
   sub-owner: 副岛主
-  trusted: 信任者（trusted）
-  coop: 协作者（coop）
-  visitor: 访客（visitor）
-  mod: Mod
+  trusted: 受信任
+  coop: 合作者
+  visitor: 游客
+  mod: MOD
 successfully-loaded: |-
   &6  ____             _        ____
   &6 |  _ \           | |      |  _ \             &7by &atastybento &7and &aPoslovitch
   &6 | |_) | ___ _ __ | |_ ___ | |_) | _____  __  &72017 - 2020
-  &6 |  _ < / _ \ '_ \| __/ _ \|  _ < / _ \ \/ /
+  &6 |  _ < / _ \ '_ \| __/ _ \|  _ < / _ \ \/ /  &7translated by Jeansou
   &6 | |_) |  __/ | | | || (_) | |_) | (_) >  <   &bv&e[version]
   &6 |____/ \___|_| |_|\__\___/|____/ \___/_/\_\  &8加载用时 &e[time]&8ms.
