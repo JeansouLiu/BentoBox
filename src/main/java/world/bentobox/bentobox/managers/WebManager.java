@@ -65,15 +65,15 @@ public class WebManager {
     public void requestGitHubData() {
         getGitHub().ifPresent(gh -> {
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("从 GitHub 下载数据中...");
-                plugin.log("更新扩展列表中...");
+                plugin.log("Downloading data from GitHub...");
+                plugin.log("Updating the Catalog...");
             }
             GitHubRepository weblinkRepo;
             try {
                 weblinkRepo = new GitHubRepository(gh, "BentoBoxWorld/weblink");
             } catch (Exception e) {
                 if (plugin.getSettings().isLogGithubDownloadData()) {
-                    plugin.logError("连接到 GitHub 时出错..");
+                    plugin.logError("An unhandled exception occurred when connecting to the GitHub weblink..");
                     plugin.logStacktrace(e);
                 }
                 weblinkRepo = null;
@@ -90,7 +90,7 @@ public class WebManager {
             }
 
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("更新作者信息中...");
+                plugin.log("Updating Contributors information...");
             }
 
             List<String> repositories = new ArrayList<>();
@@ -103,7 +103,7 @@ public class WebManager {
 
             /* Download the contributors */
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("正在为: " + String.join(", ", repositories) + " 生成作者信息");
+                plugin.log("Gathering contribution data for: " + String.join(", ", repositories));
             }
 
             for (String repository : repositories) {
@@ -124,7 +124,7 @@ public class WebManager {
 
             // People were concerned that the download took ages, so we need to tell them it's over now.
             if (plugin.getSettings().isLogGithubDownloadData()) {
-                plugin.log("从 GitHub 下载数据成功.");
+                plugin.log("Successfully downloaded data from GitHub.");
             }
         });
     }
@@ -239,7 +239,7 @@ public class WebManager {
 
     /**
      *
-     * @param repository
+     * @param repository - name of the repo
      * @return list of contributors
      * @since 1.9.0
      */

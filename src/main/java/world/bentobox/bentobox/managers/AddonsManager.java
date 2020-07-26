@@ -78,14 +78,14 @@ public class AddonsManager {
      * Loads all the addons from the addons folder
      */
     public void loadAddons() {
-        plugin.log("加载扩展中...");
+        plugin.log("Loading addons...");
         File f = new File(plugin.getDataFolder(), "addons");
         if (!f.exists() && !f.mkdirs()) {
-            plugin.logError("无法创建扩展文件夹!");
+            plugin.logError("Cannot create addons folder!");
             return;
         }
         Arrays.stream(Objects.requireNonNull(f.listFiles())).filter(x -> !x.isDirectory() && x.getName().endsWith(".jar")).forEach(this::loadAddon);
-        plugin.log("已加载 " + getLoadedAddons().size() + " 个扩展.");
+        plugin.log("Loaded " + getLoadedAddons().size() + " addons.");
 
         if (!getLoadedAddons().isEmpty()) {
             sortAddons();
@@ -104,8 +104,8 @@ public class AddonsManager {
             if (main != null) {
                 if (this.getAddonByMainClassName(main).isPresent()) {
                     getAddonByMainClassName(main).ifPresent(a -> {
-                        plugin.logError("扩展重复! 扩展 " + a.getDescription().getName() + " " + a.getDescription().getVersion() + " 已经加载了!");
-                        plugin.logError("移除重复的扩展并重启服务器!");
+                        plugin.logError("Duplicate addon! Addon " + a.getDescription().getName() + " " + a.getDescription().getVersion() + " has already been loaded!");
+                        plugin.logError("Remove the duplicate and restart!");
                     });
                     return;
                 }
@@ -142,8 +142,8 @@ public class AddonsManager {
         // Checks if this addon is compatible with the current BentoBox version.
         if (!isAddonCompatibleWithBentoBox(addon)) {
             // It is not, abort.
-            plugin.logError("无法加载 " + addon.getDescription().getName() + " 它需要 BentoBox 版本 " + addon.getDescription().getApiVersion() + " 以上.");
-            plugin.logError("注意: 请升级 BentoBox.");
+            plugin.logError("Cannot load " + addon.getDescription().getName() + " because it requires BentoBox version " + addon.getDescription().getApiVersion() + " or greater.");
+            plugin.logError("NOTE: Please update BentoBox.");
             addon.setState(State.INCOMPATIBLE);
             return;
         }
@@ -174,14 +174,14 @@ public class AddonsManager {
      */
     public void enableAddons() {
         if (getLoadedAddons().isEmpty()) return;
-        plugin.log("启用游戏模式扩展中...");
+        plugin.log("Enabling game mode addons...");
         // Enable GameModes first, then other addons
         getLoadedAddons().stream().filter(GameModeAddon.class::isInstance).forEach(this::enableAddon);
-        plugin.log("启用其他扩展中...");
+        plugin.log("Enabling other addons...");
         getLoadedAddons().stream().filter(g -> !(g instanceof GameModeAddon)).forEach(this::enableAddon);
         // Set perms for enabled addons
         this.getEnabledAddons().forEach(this::setPerms);
-        plugin.log("扩展成功启用.");
+        plugin.log("Addons successfully enabled.");
     }
 
     boolean setPerms(Addon addon) {
@@ -258,7 +258,7 @@ public class AddonsManager {
     /**
      * Handles an addon which failed to load due to an incompatibility (missing class, missing method).
      * @param addon instance of the Addon.
-     * @param e
+     * @param e - linkage exception
      * @since 1.1
      */
     private void handleAddonIncompatibility(@NonNull Addon addon, LinkageError e) {
@@ -439,7 +439,7 @@ public class AddonsManager {
     public Class<?> getClassByName(@NonNull final String name) {
         try {
             return classes.getOrDefault(name, loaders.values().stream().map(l -> l.findClass(name, false)).filter(Objects::nonNull).findFirst().orElse(null));
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
         return null;
     }
 

@@ -9,8 +9,8 @@
     <version>${revision}</version>
 
     <name>BentoBox</name>
-    <description>Highly scalable and customizable Minecraft Spigot plugin that enables you to run island-type gamemodes.</description>
-    <url>https://github.com/BentoBoxWorld/BentoBox</url>
+    <description>极具扩展性的岛屿游戏插件.</description>
+    <url>https://github.com/JeansouLiu/BentoBox_Chinese</url>
     <inceptionYear>2017</inceptionYear>
 
     <developers>
@@ -32,6 +32,18 @@
             </roles>
         </developer>
     </developers>
+
+    <contributors>
+        <contributor>
+          <name>Jeansou</name>
+          <email>jeansou@jeansou.com</email>
+          <url>https://blog.jeansou.com</url>
+          <roles>
+            <role>Translator</role>
+          </roles>
+          <timezone>+8</timezone>
+        </contributor>
+    </contributors>
 
     <scm>
         <connection>scm:git:https://github.com/BentoBoxWorld/BentoBox.git</connection>
@@ -63,6 +75,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
         <!-- Non-minecraft related dependencies -->
         <powermock.version>2.0.4</powermock.version>
         <mongodb.version>3.8.0</mongodb.version>
@@ -79,12 +92,9 @@
         <!-- Revision variable removes warning about dynamic version -->
         <revision>${build.version}</revision>
         <!-- Do not change unless you want different name for local builds. -->
-        <build.number>-Chinese</build.number>
+        <build.number>-中文版</build.number>
         <!-- This allows to change between versions. -->
-        <build.version>1.14.0</build.version>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <build.version>1.14.2</build.version>
     </properties>
 
     <!-- Profiles will allow to automatically change build version. -->
@@ -186,6 +196,13 @@
     </repositories>
 
     <dependencies>
+        <!-- Spigot NMS. Used for Head Getter. -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>${spigot.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -327,9 +344,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>

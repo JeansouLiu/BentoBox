@@ -3,8 +3,8 @@ main: world.bentobox.bentobox.BentoBox
 version: ${project.version}${build.number}
 api-version: "1.15"
 
-authors: [tastybento, Poslovitch]
-website: https://bentobox.world
+authors: [tastybento, Poslovitch, Jeansou]
+website: https://bb.jeansou.com/
 description: ${project.description}
 
 load: STARTUP

@@ -71,11 +71,11 @@ public class TabbedPanel extends Panel implements PanelListener {
     public void openPanel(int activeTab, int page) {
         if (!tpb.getTabs().containsKey(activeTab)) {
             // Request to open a non-existent tab
-            throw new InvalidParameterException("Attempt to open a non-existent tab in a tabbed panel. Missing tab #" + activeTab);
+            throw new InvalidParameterException("您正尝试打开不存在的页码 #" + activeTab);
         }
         if (page < 0) {
             // Request to open a non-existent tab
-            throw new InvalidParameterException("Attempt to open a tab in a tabbed panel to a negative page! " + page);
+            throw new InvalidParameterException("页数不可为负! " + page);
         }
         this.activeTab = activeTab;
         this.activePage = page;
@@ -118,7 +118,7 @@ public class TabbedPanel extends Panel implements PanelListener {
                 }).build());
             }
         } else {
-            throw new InvalidParameterException("Unknown tab slot number " + activeTab);
+            throw new InvalidParameterException("未知格数 " + activeTab);
         }
         // Show it to the player
         this.makePanel(tab.getName(), items, tpb.getSize(), tpb.getUser(), this);

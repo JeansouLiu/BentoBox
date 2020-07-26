@@ -105,7 +105,6 @@ public class BlueprintPaster {
      * @param plugin - BentoBox
      * @param clipboard - clipboard to paste
      * @param location - location to paste to
-     * @param task - task to run after pasting, null if none
      */
     public BlueprintPaster(@NonNull BentoBox plugin, @NonNull BlueprintClipboard clipboard, @NonNull Location location) {
         this.plugin = plugin;
@@ -125,7 +124,6 @@ public class BlueprintPaster {
      * @param bp - blueprint to paste
      * @param world - world to paste to
      * @param island - island related to this paste
-     * @param task - task to run after pasting
      */
     public BlueprintPaster(@NonNull BentoBox plugin, @NonNull Blueprint bp, World world, @NonNull Island island) {
         this.plugin = plugin;
@@ -266,9 +264,9 @@ public class BlueprintPaster {
             }
         } catch (IllegalArgumentException e) {
             // This may happen if the block type is no longer supported by the server
-            plugin.logWarning("蓝图文件包含此服务器不支持的物品.");
-            plugin.logWarning("请自行加载蓝图, 移除该物品以修复此问题.");
-            plugin.logWarning("世界: " + world.getName() + "; 无效物品数据: " + block.getBlockData());
+            plugin.logWarning("Blueprint references materials not supported on this server version.");
+            plugin.logWarning("Load blueprint manually, check and save to fix for this server version.");
+            plugin.logWarning("World: " + world.getName() + "; Failed block data: " + block.getBlockData());
         }
         return blockData;
     }

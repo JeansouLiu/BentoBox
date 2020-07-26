@@ -47,14 +47,14 @@ public class AddonClassLoader extends URLClassLoader {
         try {
             String mainClass = data.getString("main");
             if (mainClass == null) {
-                throw new InvalidAddonFormatException("addon.yml 没有定义主类!");
+                throw new InvalidAddonFormatException("addon.yml does not define a main class!");
             }
             javaClass = Class.forName(mainClass, true, this);
             if(mainClass.startsWith("world.bentobox.bentobox")){
-                throw new InvalidAddonFormatException("包声明不能以 'world.bentobox.bentobox' 开头");
+                throw new InvalidAddonFormatException("Package declaration cannot start with 'world.bentobox.bentobox'");
             }
         } catch (Exception e) {
-            throw new InvalidDescriptionException("无法加载 '" + path.getName() + "' 位于 '" + path.getParent() + "' - " + e.getMessage());
+            throw new InvalidDescriptionException("无法加载 '" + path.getParent() + "' 下的 '" + path.getName() + "' - " + e.getMessage());
         }
 
         Class<? extends Addon> addonClass;

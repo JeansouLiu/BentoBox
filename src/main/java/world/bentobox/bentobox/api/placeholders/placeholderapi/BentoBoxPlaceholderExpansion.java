@@ -16,7 +16,7 @@ public class BentoBoxPlaceholderExpansion extends BasicPlaceholderExpansion {
 
     @Override
     public String getAuthor() {
-        return "Tastybento and Poslovitch";
+        return "Tastybento and Poslovitch, translated by Jeansou";
     }
 
     @Override

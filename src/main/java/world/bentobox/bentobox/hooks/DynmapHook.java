@@ -85,6 +85,6 @@ public class DynmapHook extends Hook {
 
     @Override
     public String getFailureCause() {
-        return "请更新 dynmap.";
+        return "请升级您的 dynmap 的版本.";
     }
 }

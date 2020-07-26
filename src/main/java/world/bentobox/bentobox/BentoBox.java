@@ -98,9 +98,9 @@ public class BentoBox extends JavaPlugin {
         if (!ServerCompatibility.getInstance().checkCompatibility().isCanLaunch()) {
             // The server's most likely incompatible.
             // Show a warning
-            logWarning("************ 注意 **************");
-            logWarning("BentoBox 与你的服务器可能不兼容!");
-            logWarning("BentoBox 兼容以下 Spigot 版本:");
+            logWarning("************ 免责声明 **************");
+            logWarning("BentoBox 可能与此服务器版本不兼容!");
+            logWarning("BentoBox 仅在以下 Spigot 版本中进行过测试:");
 
             List<String> versions = ServerCompatibility.ServerVersion.getVersions(ServerCompatibility.Compatibility.COMPATIBLE, ServerCompatibility.Compatibility.SUPPORTED)
                     .stream().map(ServerCompatibility.ServerVersion::toString).collect(Collectors.toList());
@@ -225,14 +225,15 @@ public class BentoBox extends JavaPlugin {
                     this.addonsManager.allLoaded();
                     // Fire plugin ready event - this should go last after everything else
                     Bukkit.getPluginManager().callEvent(new BentoBoxReadyEvent());
-                    instance.log("蓝图加载完成.");
+                    instance.log("蓝图加载完毕.");
                 }
             }, 0L, 1L);
 
             if (getSettings().getDatabaseType().equals(DatabaseSetup.DatabaseType.YAML)) {
-                logWarning("*** 您似乎仍在使用 YAML 数据库 ! ***");
-                logWarning("此存储类型将在未来的版本中被移除.");
-                logWarning("您应该尽快转换数据库类型. 详见 Wiki.");
+                logWarning("*** You're still using YAML database ! ***");
+                logWarning("This database type is being deprecated from BentoBox as some official addons encountered difficulties supporting it correctly.");
+                logWarning("You should switch ASAP to an alternative database type. Please refer to the comments in BentoBox's config.yml.");
+                logWarning("There is NO guarantee YAML database will remain properly supported in the following updates, and its usage should as such be considered a non-viable situation.");
                 logWarning("*** *** *** *** *** *** *** *** *** *** ***");
             }
         });
@@ -358,13 +359,13 @@ public class BentoBox extends JavaPlugin {
      * @since 1.3.0
      */
     public boolean loadSettings() {
-        log("加载配置文件中...");
+        log("从 config.yml 加载设置中...");
         // Load settings from config.yml. This will check if there are any issues with it too.
         if (configObject == null) configObject = new Config<>(this, Settings.class);
         settings = configObject.loadConfigObject();
         if (settings == null) {
             // Settings did not load correctly. Disable plugin.
-            logError("配置加载失败 - 正在禁用插件 - 请检查 config.yml");
+            logError("设置未成功加载 - 禁用插件中 - 请检查 config.yml");
             getPluginLoader().disablePlugin(this);
             return false;
         }
@@ -395,7 +396,7 @@ public class BentoBox extends JavaPlugin {
     }
 
     public void logDebug(Object object) {
-        getLogger().info(() -> "DEBUG: " + object);
+        getLogger().info(() -> "调试: " + object);
     }
 
     public void logError(String error) {

@@ -27,7 +27,7 @@ public class HooksManager {
 
     public void registerHook(@NonNull Hook hook) {
         if (hook.isPluginAvailable()) {
-            plugin.log("绑定 " + hook.getPluginName() + "中...");
+            plugin.log("Hooking with " + hook.getPluginName() + "...");
             if (hook.hook()) {
                 hooks.add(hook);
             } else {

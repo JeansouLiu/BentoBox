@@ -388,14 +388,21 @@ commands:
       the-following: '&b以下玩家被封禁：'
       you-can-ban: '&b您最多可以再封禁 &e[number] 个玩家。'
     create:
-      creating-island: '&a正在创建岛屿……'
+      creating-island: '&a正在定位岛屿……'
       parameters: <blueprint>
       pick-world: '&c从 [worlds] 中选择世界'
-      unable-create-island: '&c您的岛屿无法被生成，请联系管理员。'
+      unable-create-island: '&c岛屿创建失败，请联系管理员。'
+      cannot-create-island: "&c 定位岛屿超时, 请重试..."
       description: 创建岛屿，可以选择是否使用蓝图（需要有相应权限）
       too-many-islands: '&c本世界中的岛屿太多了：没有足够空间创建您的岛屿'
-      pick: '&a挑个岛屿'
+      pick: '&2选择一个初始岛屿'
       unknown-blueprint: '&c那个蓝图还没有被加载。'
+      pasting:
+        estimated-time: "&a 预计耗时: &b[number]&a秒."
+        blocks: "&a 正在创建岛屿: &b共 [number] &a个方块..."
+        entities: "&a 正在生成生物: &b共 [number] &a个实体..."
+        done: "&a 完成! 你的岛屿已创建成功!"
+      you-can-teleport-to-your-island: "&a您现在可以传送到你的岛屿."
     expel:
       parameters: <player>
       description: 从你的岛上驱逐一名成员
@@ -791,8 +798,10 @@ protection:
       description: 显示进入和离开消息
       island: '[name] 的岛屿'
       name: 进入和离开消息
-      now-entering: '&b当前进入 [name]'
-      now-leaving: '&b当前离开 [name]'
+      now-entering: '&b您已进入 [name]'
+      now-entering-your-island: "&a您已回到您的岛屿."
+      now-leaving: '&b您已离开 [name]'
+      now-leaving-your-island: "&a您已离开您的岛屿."
     EXPERIENCE_BOTTLE_THROWING:
       hint: 不允许扔经验瓶
       name: 经验瓶的投掷

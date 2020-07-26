@@ -104,7 +104,7 @@ public class AdminPurgeCommand extends CompositeCommand implements Listener {
                 getIslands().deleteIsland(i, true, null);
                 count++;
                 String percentage = String.format("%.1f", (((float) count)/getPurgeableIslandsCount() * 100));
-                getPlugin().log(count + " islands purged out of " + getPurgeableIslandsCount() + " (" + percentage + " %)");
+                getPlugin().log(count + " 岛屿清除进度 " + getPurgeableIslandsCount() + " (" + percentage + " %)");
             });
         } else {
             user.sendMessage("commands.admin.purge.completed");
@@ -130,9 +130,9 @@ public class AdminPurgeCommand extends CompositeCommand implements Listener {
         .filter(i -> ((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) > days)
         .forEach(i -> {
             Date date = new Date(Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed());
-            BentoBox.getInstance().log("Will purge " +
+            BentoBox.getInstance().log("将清除 " +
                     BentoBox.getInstance().getPlayers().getName(i.getOwner()) +
-                    " last logged in " + (int)((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) + " days ago. " + date);
+                    " 超过 " + (int)((double)(System.currentTimeMillis() - Bukkit.getOfflinePlayer(i.getOwner()).getLastPlayed()) / 1000 / 3600 / 24) + " 未活动的岛屿. " + date);
         });
         return getPlugin().getIslands().getIslands().stream()
                 .filter(i -> !i.isSpawn())

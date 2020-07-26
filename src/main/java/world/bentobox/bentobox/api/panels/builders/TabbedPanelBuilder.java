@@ -61,7 +61,7 @@ public class TabbedPanelBuilder {
      */
     public TabbedPanelBuilder tab(int slot, Tab tab) {
         if (slot < 0 || slot > 9) {
-            throw new InvalidParameterException("Slot must be between 0 and 9");
+            throw new InvalidParameterException("格数必须为 0 - 9 的数字");
         }
         tabs.put(slot, tab);
         return this;
@@ -74,7 +74,7 @@ public class TabbedPanelBuilder {
      */
     public TabbedPanelBuilder startingSlot(int slot) {
         if (slot < 0 || slot > 9) {
-            throw new InvalidParameterException("Slot must be between 0 and 9");
+            throw new InvalidParameterException("格数必须为 0 - 9 的数字");
         }
         startingSlot = slot;
         return this;

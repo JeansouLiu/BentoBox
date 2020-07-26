@@ -14,7 +14,7 @@ import world.bentobox.bentobox.api.user.User;
  */
 public class VaultHook extends Hook {
 
-    private static final String AMOUNT_MUST_BE_POSITIVE = "金额必须为正数.";
+    private static final String AMOUNT_MUST_BE_POSITIVE = "必须为正数.";
     private Economy economy;
 
     public VaultHook() {
@@ -37,7 +37,7 @@ public class VaultHook extends Hook {
 
     @Override
     public String getFailureCause() {
-        return "未发现经济插件";
+        return "未发现任何经济插件";
     }
 
     public Economy getEconomy() {

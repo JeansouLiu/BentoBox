@@ -131,12 +131,12 @@ public class IslandExpelCommand extends CompositeCommand {
                         .orElse(false))
                 .orElse(false)
                 && target.performCommand(this.getTopLabel() + " create")) {
-            getAddon().logWarning("Expel: " + target.getName() + " had no island, so one was created");
+            getAddon().logWarning("Expel: " + target.getName() + " 没有岛屿, 所以创建了一个");
             user.sendMessage(SUCCESS, TextVariables.NAME, target.getName());
             return true;
         }
 
-        getAddon().logError("Expel: " + target.getName() + " had no island, and one could not be created");
+        getAddon().logError("Expel: " + target.getName() + " 没有岛屿, 且无法生成新岛");
         user.sendMessage(CANNOT_EXPEL);
         return false;
     }

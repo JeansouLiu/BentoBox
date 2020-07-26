@@ -322,7 +322,7 @@ public class User {
                 String[] spl = permission.split(permPrefix);
                 if (spl.length > 1) {
                     if (!NumberUtils.isNumber(spl[1])) {
-                        plugin.logError("Player " + player.getName() + " has permission: '" + permission + "' <-- the last part MUST be a number! Ignoring...");
+                        plugin.logError("玩家 " + player.getName() + " 所拥有的权限为: '" + permission + "' <-- 末尾必须为数字! 正在忽略...");
                     } else {
                         int v = Integer.parseInt(spl[1]);
                         if (v < 0) {
