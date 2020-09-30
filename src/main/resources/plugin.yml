@@ -4,8 +4,8 @@ version: ${project.version}${build.number}
 api-version: "1.15"
 
 authors: [tastybento, Poslovitch]
-contributors: ["The BentoBoxWorld Community"]
-website: https://bentobox.world
+contributors: ["The BentoBoxWorld Community and Jeansou"]
+website: https://bb.jeansou.com
 description: ${project.description}
 
 load: STARTUP

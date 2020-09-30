@@ -9,5 +9,6 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=BentoBoxWorld_BentoBox&metric=bugs)](https://sonarcloud.io/dashboard?id=BentoBoxWorld_BentoBox)
 
 详细介绍见 https://www.mcbbs.net/thread-846318-1-1.html
-<br>汉化进度 64%<br>
+<br>汉化了部分初始化信息, zh_CN.yml 重汉化进度 10%
 可加入汉化测试服务器 mc.jeansou.com 查看汉化效果
+给我充点电: https://afdian.net/@jeansou

@@ -48,7 +48,7 @@ public class Config<T> {
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | ClassNotFoundException | IntrospectionException
                 | NoSuchMethodException | SecurityException e) {
-            logger.severe(() -> "Could not load config! Error: " + e.getMessage());
+            logger.severe(() -> "加载配置文件失败! 错误: " + e.getMessage());
         }
         return result;
     }

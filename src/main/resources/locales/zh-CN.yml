@@ -102,7 +102,7 @@ commands:
       set-pos2: '&a已设置点 2 于 [vector]'
       set-different-pos: '&c请换个位置 - 这个位置已经设置过了！'
       need-pos1-pos2: '&c请先设置点 1 和 点 2！'
-      copying: '&b复制方块中……'
+      copying: '&b复制方块中...'
       copied-blocks: '&b已从剪切板复制了 [number] 个方块'
       look-at-a-block: '&c请看向一个 20 块以内的方块来设置'
       mid-copy: '&c复制中。请稍等。'

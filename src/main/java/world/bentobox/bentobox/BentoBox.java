@@ -98,9 +98,9 @@ public class BentoBox extends JavaPlugin {
         if (!ServerCompatibility.getInstance().checkCompatibility().isCanLaunch()) {
             // The server's most likely incompatible.
             // Show a warning
-            logWarning("************ Disclaimer **************");
-            logWarning("BentoBox may not be compatible with this server!");
-            logWarning("BentoBox is tested only on the following Spigot versions:");
+            logWarning("************ 注意 **************");
+            logWarning("BentoBox 可能与当前服务器版本不兼容!");
+            logWarning("BentoBox 仅在以下版本中进行过测试:");
 
             List<String> versions = ServerCompatibility.ServerVersion.getVersions(ServerCompatibility.Compatibility.COMPATIBLE, ServerCompatibility.Compatibility.SUPPORTED)
                     .stream().map(ServerCompatibility.ServerVersion::toString).collect(Collectors.toList());
@@ -186,10 +186,10 @@ public class BentoBox extends JavaPlugin {
             try {
                 islandsManager.load();
             } catch (Exception e) {
-                logError("*****************CRITIAL ERROR!******************");
+                logError("*****************严重错误!******************");
                 logError(e.getMessage());
                 //Arrays.stream(e.getMessage().split("[\n\r]+")).forEach(this::logError);
-                logError("Could not load islands! Disabling BentoBox...");
+                logError("加载玩家领域信息失败! 禁用 BentoBox 中...");
                 logError("*************************************************");
                 // Stop all addons
                 if (addonsManager != null) {
@@ -241,7 +241,7 @@ public class BentoBox extends JavaPlugin {
                     this.addonsManager.allLoaded();
                     // Fire plugin ready event - this should go last after everything else
                     Bukkit.getPluginManager().callEvent(new BentoBoxReadyEvent());
-                    instance.log("All blueprints loaded.");
+                    instance.log("蓝图加载完毕.");
                 }
             }, 0L, 1L);
 
@@ -375,13 +375,13 @@ public class BentoBox extends JavaPlugin {
      * @since 1.3.0
      */
     public boolean loadSettings() {
-        log("Loading Settings from config.yml...");
+        log("从 config.yml 中读取设置中...");
         // Load settings from config.yml. This will check if there are any issues with it too.
         if (configObject == null) configObject = new Config<>(this, Settings.class);
         settings = configObject.loadConfigObject();
         if (settings == null) {
             // Settings did not load correctly. Disable plugin.
-            logError("Settings did not load correctly - disabling plugin - please check config.yml");
+            logError("设置加载出错 - 正在禁用插件 - 请检查 config.yml");
             getPluginLoader().disablePlugin(this);
             return false;
         }

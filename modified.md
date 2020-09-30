@@ -1,0 +1,12 @@
+/pom.xml
+/src/main/.../BentoBox.java
+/src/main/.../Settings.java
+/src/main/.../api/Addon.java
+/src/main/.../api/configuration/Config.java
+/src/main/.../blueprints/BlueprintPaster.java
+/src/main/.../commands/BentoBoxAboutCommand.java
+/src/main/.../versions/ServerCompatibility.java
+/src/main/.../managers/WebManager.java
+/src/resources/plugins.yml
+/src/resources/config.yml
+/src/resources/locales/zh_CN.yml
