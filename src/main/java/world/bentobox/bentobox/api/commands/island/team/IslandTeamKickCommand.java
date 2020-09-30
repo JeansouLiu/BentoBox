@@ -2,7 +2,12 @@ package world.bentobox.bentobox.api.commands.island.team;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.commands.ConfirmableCommand;
@@ -77,7 +82,7 @@ public class IslandTeamKickCommand extends ConfirmableCommand {
 
     private void kick(User user, UUID targetUUID) {
         User target = User.getInstance(targetUUID);
-        target.sendMessage("commands.island.team.kick.owner-kicked", "[gamemode]", getAddon().getDescription().getName());
+        target.sendMessage("commands.island.team.kick.owner-kicked", TextVariables.GAMEMODE, getAddon().getDescription().getName());
         Island oldIsland = getIslands().getIsland(getWorld(), targetUUID);
         getIslands().removePlayer(getWorld(), targetUUID);
         // Execute commands when leaving
@@ -139,6 +144,22 @@ public class IslandTeamKickCommand extends ConfirmableCommand {
                     oldIsland.getUniqueId(),
                     targetUUID.toString(),
                     getSettings().getInviteCooldown() * 60));
+        }
+    }
+
+    @Override
+    public Optional<List<String>> tabComplete(User user, String alias, List<String> args) {
+        Island island = getIslands().getIsland(getWorld(), user.getUniqueId());
+        if (island != null) {
+            List<String> options = island.getMemberSet().stream()
+                    .filter(uuid -> island.getRank(uuid) >= RanksManager.MEMBER_RANK)
+                    .map(Bukkit::getOfflinePlayer)
+                    .map(OfflinePlayer::getName).collect(Collectors.toList());
+
+            String lastArg = !args.isEmpty() ? args.get(args.size()-1) : "";
+            return Optional.of(Util.tabLimit(options, lastArg));
+        } else {
+            return Optional.empty();
         }
     }
 }

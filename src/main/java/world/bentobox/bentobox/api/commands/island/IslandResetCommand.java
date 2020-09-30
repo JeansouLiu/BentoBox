@@ -150,7 +150,7 @@ public class IslandResetCommand extends ConfirmableCommand {
             if (noPaste) builder.noPaste();
             builder.build();
         } catch (IOException e) {
-            getPlugin().logError("无法为玩家创建岛屿. " + e.getMessage());
+            getPlugin().logError("Could not create island for player. " + e.getMessage());
             user.sendMessage(e.getMessage());
             return false;
         }
@@ -173,7 +173,7 @@ public class IslandResetCommand extends ConfirmableCommand {
             User member = User.getInstance(memberUUID);
             // Send a "you're kicked" message if the member is not the island owner (send before removing!)
             if (!memberUUID.equals(island.getOwner())) {
-                member.sendMessage("commands.island.reset.kicked-from-island", "[gamemode]", getAddon().getDescription().getName());
+                member.sendMessage("commands.island.reset.kicked-from-island", TextVariables.GAMEMODE, getAddon().getDescription().getName());
             }
             // Remove player
             getIslands().removePlayer(getWorld(), memberUUID);

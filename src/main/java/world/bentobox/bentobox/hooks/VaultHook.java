@@ -14,7 +14,7 @@ import world.bentobox.bentobox.api.user.User;
  */
 public class VaultHook extends Hook {
 
-    private static final String AMOUNT_MUST_BE_POSITIVE = "必须为正数.";
+    private static final String AMOUNT_MUST_BE_POSITIVE = "Amount must be positive.";
     private Economy economy;
 
     public VaultHook() {
@@ -37,7 +37,7 @@ public class VaultHook extends Hook {
 
     @Override
     public String getFailureCause() {
-        return "未发现任何经济插件";
+        return "no plugin supporting economy has been found";
     }
 
     public Economy getEconomy() {
@@ -65,7 +65,7 @@ public class VaultHook extends Hook {
      */
     public EconomyResponse withdraw(User user, double amount) {
         if (!user.isOfflinePlayer()) {
-            throw new IllegalArgumentException("玩家不存在");
+            throw new IllegalArgumentException("User must be a Player or an OfflinePlayer");
         }
         if (amount < 0.0D) {
             throw new IllegalArgumentException(AMOUNT_MUST_BE_POSITIVE);
@@ -81,7 +81,7 @@ public class VaultHook extends Hook {
      */
     public EconomyResponse deposit(User user, double amount) {
         if (!user.isOfflinePlayer()) {
-            throw new IllegalArgumentException("玩家不存在");
+            throw new IllegalArgumentException("User must be a Player or an OfflinePlayer");
         }
         if (amount < 0.0D) {
             throw new IllegalArgumentException(AMOUNT_MUST_BE_POSITIVE);

@@ -222,7 +222,7 @@ public class Flag implements Comparable<Flag> {
     public void setDefaultSetting(World world, boolean defaultSetting) {
         WorldSettings ws = BentoBox.getInstance().getIWM().getWorldSettings(world);
         if (ws == null ) {
-            BentoBox.getInstance().logError("尝试为未注册的岛屿应用默认世界设置. Register flags in onEnable.");
+            BentoBox.getInstance().logError("Attempt to set default world setting for unregistered world. Register flags in onEnable.");
             return;
         }
         ws.getWorldFlags().put(getID(), defaultSetting);

@@ -98,9 +98,9 @@ public class BentoBox extends JavaPlugin {
         if (!ServerCompatibility.getInstance().checkCompatibility().isCanLaunch()) {
             // The server's most likely incompatible.
             // Show a warning
-            logWarning("************ 免责声明 **************");
-            logWarning("BentoBox 可能与此服务器版本不兼容!");
-            logWarning("BentoBox 仅在以下 Spigot 版本中进行过测试:");
+            logWarning("************ Disclaimer **************");
+            logWarning("BentoBox may not be compatible with this server!");
+            logWarning("BentoBox is tested only on the following Spigot versions:");
 
             List<String> versions = ServerCompatibility.ServerVersion.getVersions(ServerCompatibility.Compatibility.COMPATIBLE, ServerCompatibility.Compatibility.SUPPORTED)
                     .stream().map(ServerCompatibility.ServerVersion::toString).collect(Collectors.toList());
@@ -183,7 +183,23 @@ public class BentoBox extends JavaPlugin {
             registerListeners();
 
             // Load islands from database - need to wait until all the worlds are loaded
-            islandsManager.load();
+            try {
+                islandsManager.load();
+            } catch (Exception e) {
+                logError("*****************CRITIAL ERROR!******************");
+                logError(e.getMessage());
+                //Arrays.stream(e.getMessage().split("[\n\r]+")).forEach(this::logError);
+                logError("Could not load islands! Disabling BentoBox...");
+                logError("*************************************************");
+                // Stop all addons
+                if (addonsManager != null) {
+                    addonsManager.disableAddons();
+                }
+                // Do not save players or islands, just shutdown
+                shutdown = true;
+                instance.setEnabled(false);
+                return;
+            }
 
             // Save islands & players data every X minutes
             Bukkit.getScheduler().runTaskTimer(instance, () -> {
@@ -225,7 +241,7 @@ public class BentoBox extends JavaPlugin {
                     this.addonsManager.allLoaded();
                     // Fire plugin ready event - this should go last after everything else
                     Bukkit.getPluginManager().callEvent(new BentoBoxReadyEvent());
-                    instance.log("蓝图加载完毕.");
+                    instance.log("All blueprints loaded.");
                 }
             }, 0L, 1L);
 
@@ -359,13 +375,13 @@ public class BentoBox extends JavaPlugin {
      * @since 1.3.0
      */
     public boolean loadSettings() {
-        log("从 config.yml 加载设置中...");
+        log("Loading Settings from config.yml...");
         // Load settings from config.yml. This will check if there are any issues with it too.
         if (configObject == null) configObject = new Config<>(this, Settings.class);
         settings = configObject.loadConfigObject();
         if (settings == null) {
             // Settings did not load correctly. Disable plugin.
-            logError("设置未成功加载 - 禁用插件中 - 请检查 config.yml");
+            logError("Settings did not load correctly - disabling plugin - please check config.yml");
             getPluginLoader().disablePlugin(this);
             return false;
         }
@@ -396,7 +412,7 @@ public class BentoBox extends JavaPlugin {
     }
 
     public void logDebug(Object object) {
-        getLogger().info(() -> "调试: " + object);
+        getLogger().info(() -> "DEBUG: " + object);
     }
 
     public void logError(String error) {

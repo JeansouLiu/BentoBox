@@ -118,12 +118,13 @@ public class User {
     }
 
     /**
-     * Removes this player from the User cache
+     * Removes this player from the User cache and player manager cache
      * @param player the player
      */
     public static void removePlayer(Player player) {
         if (player != null) {
             users.remove(player.getUniqueId());
+            BentoBox.getInstance().getPlayers().removePlayer(player);
         }
     }
 
@@ -322,7 +323,7 @@ public class User {
                 String[] spl = permission.split(permPrefix);
                 if (spl.length > 1) {
                     if (!NumberUtils.isNumber(spl[1])) {
-                        plugin.logError("玩家 " + player.getName() + " 所拥有的权限为: '" + permission + "' <-- 末尾必须为数字! 正在忽略...");
+                        plugin.logError("Player " + player.getName() + " has permission: '" + permission + "' <-- the last part MUST be a number! Ignoring...");
                     } else {
                         int v = Integer.parseInt(spl[1]);
                         if (v < 0) {

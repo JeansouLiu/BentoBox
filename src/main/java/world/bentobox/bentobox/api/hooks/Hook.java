@@ -16,7 +16,7 @@ public abstract class Hook {
 
     public Hook(@NonNull String pluginName, @NonNull Material icon) {
         if (pluginName.isEmpty()) {
-            throw new IllegalArgumentException("插件名不可为空.");
+            throw new IllegalArgumentException("Plugin name cannot be empty.");
         }
         this.pluginName = pluginName;
         this.icon = icon;

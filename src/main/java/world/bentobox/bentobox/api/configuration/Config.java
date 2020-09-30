@@ -48,7 +48,7 @@ public class Config<T> {
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | ClassNotFoundException | IntrospectionException
                 | NoSuchMethodException | SecurityException e) {
-            logger.severe(() -> "无法读取配置文件! 错误: " + e.getMessage());
+            logger.severe(() -> "Could not load config! Error: " + e.getMessage());
         }
         return result;
     }
@@ -64,7 +64,7 @@ public class Config<T> {
             return handler.loadObject(uniqueId);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | ClassNotFoundException | IntrospectionException | NoSuchMethodException | SecurityException e) {
-            logger.severe(() -> "配置文件包含错误! " + e.getMessage());
+            logger.severe(() -> "Could not load config object! " + e.getMessage());
             // Required for debugging
             logger.severe(ExceptionUtils.getStackTrace(e));
         }
@@ -92,7 +92,7 @@ public class Config<T> {
             handler.saveObject(instance);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException
                 | IntrospectionException e) {
-            logger.severe(() -> "无法保存配置文件! 错误: " + e.getMessage());
+            logger.severe(() -> "Could not save config! Error: " + e.getMessage());
             return false;
         }
         return true;

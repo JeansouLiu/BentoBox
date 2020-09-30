@@ -9,8 +9,8 @@
     <version>${revision}</version>
 
     <name>BentoBox</name>
-    <description>极具扩展性的岛屿游戏插件.</description>
-    <url>https://github.com/JeansouLiu/BentoBox_Chinese</url>
+    <description>Highly scalable and customizable Minecraft Spigot plugin that enables you to run island-type gamemodes.</description>
+    <url>https://github.com/BentoBoxWorld/BentoBox</url>
     <inceptionYear>2017</inceptionYear>
 
     <developers>
@@ -32,18 +32,6 @@
             </roles>
         </developer>
     </developers>
-
-    <contributors>
-        <contributor>
-          <name>Jeansou</name>
-          <email>jeansou@jeansou.com</email>
-          <url>https://blog.jeansou.com</url>
-          <roles>
-            <role>Translator</role>
-          </roles>
-          <timezone>+8</timezone>
-        </contributor>
-    </contributors>
 
     <scm>
         <connection>scm:git:https://github.com/BentoBoxWorld/BentoBox.git</connection>
@@ -90,11 +78,11 @@
         <dynmap.version>3.0-SNAPSHOT</dynmap.version>
         <worldedit.version>7.0.0</worldedit.version>
         <!-- Revision variable removes warning about dynamic version -->
-        <revision>${build.version}</revision>
+        <revision>${build.version}-SNAPSHOT</revision>
         <!-- Do not change unless you want different name for local builds. -->
-        <build.number>-中文版</build.number>
+        <build.number>-LOCAL</build.number>
         <!-- This allows to change between versions. -->
-        <build.version>1.14.2</build.version>
+        <build.version>1.15.0</build.version>
     </properties>
 
     <!-- Profiles will allow to automatically change build version. -->
@@ -196,13 +184,6 @@
     </repositories>
 
     <dependencies>
-        <!-- Spigot NMS. Used for Head Getter. -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>${spigot.version}</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -215,6 +196,13 @@
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>${paper.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Spigot NMS. Used for Head Getter. -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>${spigot.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- Metrics -->
@@ -457,7 +445,7 @@
                 <configuration>
                     <append>true</append>
                     <excludes>
-                        <!-- This is required to prevent Jacoco from adding 
+                        <!-- This is required to prevent Jacoco from adding
                             synthetic fields to a JavaBean class (causes errors in testing) -->
                         <exclude>**/*Names*</exclude>
                     </excludes>

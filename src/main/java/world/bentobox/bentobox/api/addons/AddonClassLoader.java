@@ -54,7 +54,7 @@ public class AddonClassLoader extends URLClassLoader {
                 throw new InvalidAddonFormatException("Package declaration cannot start with 'world.bentobox.bentobox'");
             }
         } catch (Exception e) {
-            throw new InvalidDescriptionException("无法加载 '" + path.getParent() + "' 下的 '" + path.getName() + "' - " + e.getMessage());
+            throw new InvalidDescriptionException("Could not load '" + path.getName() + "' in folder '" + path.getParent() + "' - " + e.getMessage());
         }
 
         Class<? extends Addon> addonClass;
