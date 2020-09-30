@@ -11,4 +11,4 @@
 详细介绍见 https://www.mcbbs.net/thread-846318-1-1.html
 <br>汉化了部分初始化信息, zh_CN.yml 重汉化进度 10%
 可加入汉化测试服务器 mc.jeansou.com 查看汉化效果
-给我充点电: https://afdian.net/@jeansou
+<br>给我充点电: https://afdian.net/@jeansou
